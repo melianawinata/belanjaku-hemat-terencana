@@ -888,10 +888,7 @@ const BODY = `
 </footer>
 
 `;
-
-function Index() {
-  useEffect(() => {
-    
+const SCRIPT = `
   // ===== Navbar scroll state =====
   const navbar=document.getElementById('navbar');
   window.addEventListener('scroll',()=>{navbar.classList.toggle('scrolled',window.scrollY>20)});
@@ -930,7 +927,12 @@ function Index() {
       if(!open){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';q.setAttribute('aria-expanded','true')}
     });
   });
+`;
 
+function Index() {
+  useEffect(() => {
+    const run = new Function(SCRIPT);
+    run();
   }, []);
 
   return (
