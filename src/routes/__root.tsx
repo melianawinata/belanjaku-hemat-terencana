@@ -77,14 +77,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Aplikasi Pengelolaan Belanja Bulanan" },
+      { name: "description", content: "BelanjaKu: Aplikasi belanja bulanan pintar untuk rumah tangga Indonesia." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Aplikasi Pengelolaan Belanja Bulanan" },
+      { property: "og:description", content: "BelanjaKu: Aplikasi belanja bulanan pintar untuk rumah tangga Indonesia." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Aplikasi Pengelolaan Belanja Bulanan" },
+      { name: "twitter:description", content: "BelanjaKu: Aplikasi belanja bulanan pintar untuk rumah tangga Indonesia." },
     ],
     links: [
       {
