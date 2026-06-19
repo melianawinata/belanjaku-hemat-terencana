@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedAppGenerateRouteImport } from './routes/_authenticated/app.generate'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
 
@@ -47,6 +48,12 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   path: '/app',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppGenerateRoute =
+  AuthenticatedAppGenerateRouteImport.update({
+    id: '/generate',
+    path: '/generate',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppDashboardRoute =
   AuthenticatedAppDashboardRouteImport.update({
     id: '/dashboard',
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/app/generate': typeof AuthenticatedAppGenerateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/app/generate': typeof AuthenticatedAppGenerateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -87,6 +96,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/_authenticated/app/generate': typeof AuthenticatedAppGenerateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/app/belanja'
     | '/app/dashboard'
+    | '/app/generate'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/app/belanja'
     | '/app/dashboard'
+    | '/app/generate'
   id:
     | '__root__'
     | '/'
@@ -117,6 +129,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/app/belanja'
     | '/_authenticated/app/dashboard'
+    | '/_authenticated/app/generate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -170,6 +183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/generate': {
+      id: '/_authenticated/app/generate'
+      path: '/generate'
+      fullPath: '/app/generate'
+      preLoaderRoute: typeof AuthenticatedAppGenerateRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/dashboard': {
       id: '/_authenticated/app/dashboard'
       path: '/dashboard'
@@ -190,11 +210,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBelanjaRoute: typeof AuthenticatedAppBelanjaRoute
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
+  AuthenticatedAppGenerateRoute: typeof AuthenticatedAppGenerateRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBelanjaRoute: AuthenticatedAppBelanjaRoute,
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
+  AuthenticatedAppGenerateRoute: AuthenticatedAppGenerateRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =
