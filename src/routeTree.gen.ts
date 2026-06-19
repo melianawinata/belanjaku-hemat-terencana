@@ -17,6 +17,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAppSelesaiRouteImport } from './routes/_authenticated/app.selesai'
 import { Route as AuthenticatedAppProfilRouteImport } from './routes/_authenticated/app.profil'
 import { Route as AuthenticatedAppMulaiBelanjaRouteImport } from './routes/_authenticated/app.mulai-belanja'
@@ -66,6 +67,11 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedAppSelesaiRoute = AuthenticatedAppSelesaiRouteImport.update({
   id: '/selesai',
@@ -126,7 +132,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/profil': typeof AuthenticatedAppProfilRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
@@ -145,7 +152,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
@@ -156,6 +162,7 @@ export interface FileRoutesByTo {
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/profil': typeof AuthenticatedAppProfilRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
@@ -165,7 +172,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
@@ -177,6 +184,7 @@ export interface FileRoutesById {
   '/_authenticated/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/_authenticated/app/profil': typeof AuthenticatedAppProfilRoute
   '/_authenticated/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
@@ -198,6 +206,7 @@ export interface FileRouteTypes {
     | '/app/mulai-belanja'
     | '/app/profil'
     | '/app/selesai'
+    | '/admin/'
     | '/app/'
     | '/app/history/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -205,7 +214,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/admin'
     | '/onboarding'
     | '/app/belanja'
     | '/app/budget'
@@ -216,6 +224,7 @@ export interface FileRouteTypes {
     | '/app/mulai-belanja'
     | '/app/profil'
     | '/app/selesai'
+    | '/admin'
     | '/app'
     | '/app/history/$id'
   id:
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/mulai-belanja'
     | '/_authenticated/app/profil'
     | '/_authenticated/app/selesai'
+    | '/_authenticated/admin/'
     | '/_authenticated/app/'
     | '/_authenticated/app/history/$id'
   fileRoutesById: FileRoutesById
@@ -304,6 +314,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/app/selesai': {
       id: '/_authenticated/app/selesai'
@@ -378,6 +395,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedAppHistoryRouteChildren {
   AuthenticatedAppHistoryIdRoute: typeof AuthenticatedAppHistoryIdRoute
 }
@@ -422,13 +450,13 @@ const AuthenticatedAppRouteWithChildren =
   AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
 }
