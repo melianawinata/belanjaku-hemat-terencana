@@ -27,6 +27,7 @@ import { Route as AuthenticatedAppFavoritRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppBudgetRouteImport } from './routes/_authenticated/app.budget'
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
+import { Route as AuthenticatedAdminTokoRouteImport } from './routes/_authenticated/admin.toko'
 import { Route as AuthenticatedAdminKategoriUserRouteImport } from './routes/_authenticated/admin.kategori-user'
 import { Route as AuthenticatedAdminKategoriBarangRouteImport } from './routes/_authenticated/admin.kategori-barang'
 import { Route as AuthenticatedAppHistoryIdRouteImport } from './routes/_authenticated/app.history.$id'
@@ -123,6 +124,11 @@ const AuthenticatedAppBelanjaRoute = AuthenticatedAppBelanjaRouteImport.update({
   path: '/belanja',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAdminTokoRoute = AuthenticatedAdminTokoRouteImport.update({
+  id: '/toko',
+  path: '/toko',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminKategoriUserRoute =
   AuthenticatedAdminKategoriUserRouteImport.update({
     id: '/kategori-user',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/_authenticated/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/_authenticated/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/_authenticated/app/budget': typeof AuthenticatedAppBudgetRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/admin/kategori-barang'
     | '/admin/kategori-user'
+    | '/admin/toko'
     | '/app/belanja'
     | '/app/budget'
     | '/app/dashboard'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/admin/kategori-barang'
     | '/admin/kategori-user'
+    | '/admin/toko'
     | '/app/belanja'
     | '/app/budget'
     | '/app/dashboard'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/admin/kategori-barang'
     | '/_authenticated/admin/kategori-user'
+    | '/_authenticated/admin/toko'
     | '/_authenticated/app/belanja'
     | '/_authenticated/app/budget'
     | '/_authenticated/app/dashboard'
@@ -411,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBelanjaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/admin/toko': {
+      id: '/_authenticated/admin/toko'
+      path: '/toko'
+      fullPath: '/admin/toko'
+      preLoaderRoute: typeof AuthenticatedAdminTokoRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/kategori-user': {
       id: '/_authenticated/admin/kategori-user'
       path: '/kategori-user'
@@ -438,12 +457,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminKategoriBarangRoute: typeof AuthenticatedAdminKategoriBarangRoute
   AuthenticatedAdminKategoriUserRoute: typeof AuthenticatedAdminKategoriUserRoute
+  AuthenticatedAdminTokoRoute: typeof AuthenticatedAdminTokoRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminKategoriBarangRoute: AuthenticatedAdminKategoriBarangRoute,
   AuthenticatedAdminKategoriUserRoute: AuthenticatedAdminKategoriUserRoute,
+  AuthenticatedAdminTokoRoute: AuthenticatedAdminTokoRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
