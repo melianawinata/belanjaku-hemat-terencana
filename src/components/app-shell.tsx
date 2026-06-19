@@ -1,0 +1,112 @@
+import { ReactNode } from "react";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/useAuth";
+import { bulanIni, labelBulanTahun } from "@/lib/format";
+import {
+  LayoutDashboard, ShoppingCart, History, Wallet, Heart, User,
+  ShoppingBasket, LogOut, Shield,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const NAV = [
+  { to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/app/belanja", label: "Belanja", icon: ShoppingCart },
+  { to: "/app/history", label: "History", icon: History },
+  { to: "/app/budget", label: "Budget", icon: Wallet },
+  { to: "/app/favorit", label: "Favorit", icon: Heart },
+  { to: "/app/profil", label: "Profil", icon: User },
+] as const;
+
+export function AppShell({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { profile, isAdmin } = useAuth();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { bulan, tahun } = bulanIni();
+
+  const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
+
+  const isActive = (to: string) => pathname.startsWith(to);
+
+  return (
+    <div className="min-h-screen bg-app-bg">
+      {/* Desktop sidebar */}
+      <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r bg-sidebar lg:flex">
+        <div className="flex items-center gap-2 px-5 py-5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <ShoppingBasket className="h-5 w-5" />
+          </span>
+          <span className="font-mono text-base font-semibold tracking-tight">BelanjaKu</span>
+        </div>
+        <nav className="flex-1 space-y-1 px-3">
+          {NAV.map((n) => (
+            <Link key={n.to} to={n.to}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                isActive(n.to) ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}>
+              <n.icon className="h-[18px] w-[18px]" /> {n.label}
+            </Link>
+          ))}
+          {isAdmin && (
+            <Link to="/admin/dashboard"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-info hover:bg-info/10">
+              <Shield className="h-[18px] w-[18px]" /> Area Admin
+            </Link>
+          )}
+        </nav>
+        <div className="border-t p-3">
+          <Button variant="ghost" className="w-full justify-start text-muted-foreground" onClick={signOut}>
+            <LogOut className="mr-2 h-4 w-4" /> Keluar
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <div className="lg:pl-60">
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/80 px-4 py-3 backdrop-blur sm:px-6">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{labelBulanTahun(bulan, tahun)}</p>
+            <p className="text-sm font-semibold">Halo, {profile?.nama?.split(" ")[0] || "Sahabat"} 👋</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 font-mono text-sm font-semibold text-primary">
+              {(profile?.nama || "?").charAt(0).toUpperCase()}
+            </span>
+          </div>
+        </header>
+        <main className="px-4 pb-24 pt-5 sm:px-6 lg:pb-10">{children}</main>
+      </div>
+
+      {/* Mobile bottom nav */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t bg-background lg:hidden">
+        {NAV.map((n) => (
+          <Link key={n.to} to={n.to}
+            className={`flex flex-col items-center gap-0.5 py-2 text-[10px] ${
+              isActive(n.to) ? "text-primary" : "text-muted-foreground"
+            }`}>
+            <n.icon className="h-5 w-5" /> {n.label}
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
+export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
+  return (
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{title}</h1>
+        {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+      </div>
+      {action}
+    </div>
+  );
+}
