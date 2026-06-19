@@ -27,6 +27,7 @@ import { Route as AuthenticatedAppFavoritRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppBudgetRouteImport } from './routes/_authenticated/app.budget'
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
+import { Route as AuthenticatedAdminKategoriUserRouteImport } from './routes/_authenticated/admin.kategori-user'
 import { Route as AuthenticatedAppHistoryIdRouteImport } from './routes/_authenticated/app.history.$id'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -121,6 +122,12 @@ const AuthenticatedAppBelanjaRoute = AuthenticatedAppBelanjaRouteImport.update({
   path: '/belanja',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAdminKategoriUserRoute =
+  AuthenticatedAdminKategoriUserRouteImport.update({
+    id: '/kategori-user',
+    path: '/kategori-user',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAppHistoryIdRoute =
   AuthenticatedAppHistoryIdRouteImport.update({
     id: '/$id',
@@ -135,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -153,6 +161,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -175,6 +184,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/_authenticated/app/budget': typeof AuthenticatedAppBudgetRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/onboarding'
+    | '/admin/kategori-user'
     | '/app/belanja'
     | '/app/budget'
     | '/app/dashboard'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/onboarding'
+    | '/admin/kategori-user'
     | '/app/belanja'
     | '/app/budget'
     | '/app/dashboard'
@@ -236,6 +248,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/app'
     | '/_authenticated/onboarding'
+    | '/_authenticated/admin/kategori-user'
     | '/_authenticated/app/belanja'
     | '/_authenticated/app/budget'
     | '/_authenticated/app/dashboard'
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBelanjaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/admin/kategori-user': {
+      id: '/_authenticated/admin/kategori-user'
+      path: '/kategori-user'
+      fullPath: '/admin/kategori-user'
+      preLoaderRoute: typeof AuthenticatedAdminKategoriUserRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/app/history/$id': {
       id: '/_authenticated/app/history/$id'
       path: '/$id'
@@ -396,10 +416,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminKategoriUserRoute: typeof AuthenticatedAdminKategoriUserRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminKategoriUserRoute: AuthenticatedAdminKategoriUserRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
