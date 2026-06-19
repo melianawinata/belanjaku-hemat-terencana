@@ -9,38 +9,378 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAppSelesaiRouteImport } from './routes/_authenticated/app.selesai'
+import { Route as AuthenticatedAppProfilRouteImport } from './routes/_authenticated/app.profil'
+import { Route as AuthenticatedAppMulaiBelanjaRouteImport } from './routes/_authenticated/app.mulai-belanja'
+import { Route as AuthenticatedAppHistoryRouteImport } from './routes/_authenticated/app.history'
+import { Route as AuthenticatedAppGenerateRouteImport } from './routes/_authenticated/app.generate'
+import { Route as AuthenticatedAppFavoritRouteImport } from './routes/_authenticated/app.favorit'
+import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
+import { Route as AuthenticatedAppBudgetRouteImport } from './routes/_authenticated/app.budget'
+import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminTokoRouteImport } from './routes/_authenticated/admin.toko'
+import { Route as AuthenticatedAdminKategoriUserRouteImport } from './routes/_authenticated/admin.kategori-user'
+import { Route as AuthenticatedAdminKategoriBarangRouteImport } from './routes/_authenticated/admin.kategori-barang'
+import { Route as AuthenticatedAdminItemRouteImport } from './routes/_authenticated/admin.item'
+import { Route as AuthenticatedAdminDefaultItemRouteImport } from './routes/_authenticated/admin.default-item'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
+import { Route as AuthenticatedAppHistoryIdRouteImport } from './routes/_authenticated/app.history.$id'
+import { Route as AuthenticatedAdminUsersIdRouteImport } from './routes/_authenticated/admin.users.$id'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAppSelesaiRoute = AuthenticatedAppSelesaiRouteImport.update({
+  id: '/selesai',
+  path: '/selesai',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppProfilRoute = AuthenticatedAppProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppMulaiBelanjaRoute =
+  AuthenticatedAppMulaiBelanjaRouteImport.update({
+    id: '/mulai-belanja',
+    path: '/mulai-belanja',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppHistoryRoute = AuthenticatedAppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppGenerateRoute =
+  AuthenticatedAppGenerateRouteImport.update({
+    id: '/generate',
+    path: '/generate',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppFavoritRoute = AuthenticatedAppFavoritRouteImport.update({
+  id: '/favorit',
+  path: '/favorit',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppDashboardRoute =
+  AuthenticatedAppDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppBudgetRoute = AuthenticatedAppBudgetRouteImport.update({
+  id: '/budget',
+  path: '/budget',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppBelanjaRoute = AuthenticatedAppBelanjaRouteImport.update({
+  id: '/belanja',
+  path: '/belanja',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminTokoRoute = AuthenticatedAdminTokoRouteImport.update({
+  id: '/toko',
+  path: '/toko',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminKategoriUserRoute =
+  AuthenticatedAdminKategoriUserRouteImport.update({
+    id: '/kategori-user',
+    path: '/kategori-user',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminKategoriBarangRoute =
+  AuthenticatedAdminKategoriBarangRouteImport.update({
+    id: '/kategori-barang',
+    path: '/kategori-barang',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminItemRoute = AuthenticatedAdminItemRouteImport.update({
+  id: '/item',
+  path: '/item',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminDefaultItemRoute =
+  AuthenticatedAdminDefaultItemRouteImport.update({
+    id: '/default-item',
+    path: '/default-item',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAppHistoryIdRoute =
+  AuthenticatedAppHistoryIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppHistoryRoute,
+  } as any)
+const AuthenticatedAdminUsersIdRoute =
+  AuthenticatedAdminUsersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAdminUsersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/app': typeof AuthenticatedAppRouteWithChildren
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
+  '/admin/item': typeof AuthenticatedAdminItemRoute
+  '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
+  '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/admin/toko': typeof AuthenticatedAdminTokoRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
+  '/app/belanja': typeof AuthenticatedAppBelanjaRoute
+  '/app/budget': typeof AuthenticatedAppBudgetRoute
+  '/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/app/favorit': typeof AuthenticatedAppFavoritRoute
+  '/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
+  '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
+  '/app/profil': typeof AuthenticatedAppProfilRoute
+  '/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/app/': typeof AuthenticatedAppIndexRoute
+  '/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
+  '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
+  '/admin/item': typeof AuthenticatedAdminItemRoute
+  '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
+  '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/admin/toko': typeof AuthenticatedAdminTokoRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
+  '/app/belanja': typeof AuthenticatedAppBelanjaRoute
+  '/app/budget': typeof AuthenticatedAppBudgetRoute
+  '/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/app/favorit': typeof AuthenticatedAppFavoritRoute
+  '/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
+  '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
+  '/app/profil': typeof AuthenticatedAppProfilRoute
+  '/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/app': typeof AuthenticatedAppIndexRoute
+  '/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
+  '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
+  '/_authenticated/admin/item': typeof AuthenticatedAdminItemRoute
+  '/_authenticated/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
+  '/_authenticated/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/_authenticated/admin/toko': typeof AuthenticatedAdminTokoRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
+  '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
+  '/_authenticated/app/budget': typeof AuthenticatedAppBudgetRoute
+  '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/_authenticated/app/favorit': typeof AuthenticatedAppFavoritRoute
+  '/_authenticated/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/_authenticated/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
+  '/_authenticated/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
+  '/_authenticated/app/profil': typeof AuthenticatedAppProfilRoute
+  '/_authenticated/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
+  '/_authenticated/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/admin'
+    | '/app'
+    | '/onboarding'
+    | '/admin/dashboard'
+    | '/admin/default-item'
+    | '/admin/item'
+    | '/admin/kategori-barang'
+    | '/admin/kategori-user'
+    | '/admin/toko'
+    | '/admin/users'
+    | '/app/belanja'
+    | '/app/budget'
+    | '/app/dashboard'
+    | '/app/favorit'
+    | '/app/generate'
+    | '/app/history'
+    | '/app/mulai-belanja'
+    | '/app/profil'
+    | '/app/selesai'
+    | '/admin/'
+    | '/app/'
+    | '/admin/users/$id'
+    | '/app/history/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/onboarding'
+    | '/admin/dashboard'
+    | '/admin/default-item'
+    | '/admin/item'
+    | '/admin/kategori-barang'
+    | '/admin/kategori-user'
+    | '/admin/toko'
+    | '/admin/users'
+    | '/app/belanja'
+    | '/app/budget'
+    | '/app/dashboard'
+    | '/app/favorit'
+    | '/app/generate'
+    | '/app/history'
+    | '/app/mulai-belanja'
+    | '/app/profil'
+    | '/app/selesai'
+    | '/admin'
+    | '/app'
+    | '/admin/users/$id'
+    | '/app/history/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/reset-password'
+    | '/_authenticated/admin'
+    | '/_authenticated/app'
+    | '/_authenticated/onboarding'
+    | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/default-item'
+    | '/_authenticated/admin/item'
+    | '/_authenticated/admin/kategori-barang'
+    | '/_authenticated/admin/kategori-user'
+    | '/_authenticated/admin/toko'
+    | '/_authenticated/admin/users'
+    | '/_authenticated/app/belanja'
+    | '/_authenticated/app/budget'
+    | '/_authenticated/app/dashboard'
+    | '/_authenticated/app/favorit'
+    | '/_authenticated/app/generate'
+    | '/_authenticated/app/history'
+    | '/_authenticated/app/mulai-belanja'
+    | '/_authenticated/app/profil'
+    | '/_authenticated/app/selesai'
+    | '/_authenticated/admin/'
+    | '/_authenticated/app/'
+    | '/_authenticated/admin/users/$id'
+    | '/_authenticated/app/history/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +388,273 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/': {
+      id: '/_authenticated/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/app/selesai': {
+      id: '/_authenticated/app/selesai'
+      path: '/selesai'
+      fullPath: '/app/selesai'
+      preLoaderRoute: typeof AuthenticatedAppSelesaiRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/profil': {
+      id: '/_authenticated/app/profil'
+      path: '/profil'
+      fullPath: '/app/profil'
+      preLoaderRoute: typeof AuthenticatedAppProfilRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/mulai-belanja': {
+      id: '/_authenticated/app/mulai-belanja'
+      path: '/mulai-belanja'
+      fullPath: '/app/mulai-belanja'
+      preLoaderRoute: typeof AuthenticatedAppMulaiBelanjaRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/history': {
+      id: '/_authenticated/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AuthenticatedAppHistoryRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/generate': {
+      id: '/_authenticated/app/generate'
+      path: '/generate'
+      fullPath: '/app/generate'
+      preLoaderRoute: typeof AuthenticatedAppGenerateRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/favorit': {
+      id: '/_authenticated/app/favorit'
+      path: '/favorit'
+      fullPath: '/app/favorit'
+      preLoaderRoute: typeof AuthenticatedAppFavoritRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/dashboard': {
+      id: '/_authenticated/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AuthenticatedAppDashboardRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/budget': {
+      id: '/_authenticated/app/budget'
+      path: '/budget'
+      fullPath: '/app/budget'
+      preLoaderRoute: typeof AuthenticatedAppBudgetRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/belanja': {
+      id: '/_authenticated/app/belanja'
+      path: '/belanja'
+      fullPath: '/app/belanja'
+      preLoaderRoute: typeof AuthenticatedAppBelanjaRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/toko': {
+      id: '/_authenticated/admin/toko'
+      path: '/toko'
+      fullPath: '/admin/toko'
+      preLoaderRoute: typeof AuthenticatedAdminTokoRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/kategori-user': {
+      id: '/_authenticated/admin/kategori-user'
+      path: '/kategori-user'
+      fullPath: '/admin/kategori-user'
+      preLoaderRoute: typeof AuthenticatedAdminKategoriUserRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/kategori-barang': {
+      id: '/_authenticated/admin/kategori-barang'
+      path: '/kategori-barang'
+      fullPath: '/admin/kategori-barang'
+      preLoaderRoute: typeof AuthenticatedAdminKategoriBarangRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/item': {
+      id: '/_authenticated/admin/item'
+      path: '/item'
+      fullPath: '/admin/item'
+      preLoaderRoute: typeof AuthenticatedAdminItemRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/default-item': {
+      id: '/_authenticated/admin/default-item'
+      path: '/default-item'
+      fullPath: '/admin/default-item'
+      preLoaderRoute: typeof AuthenticatedAdminDefaultItemRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/app/history/$id': {
+      id: '/_authenticated/app/history/$id'
+      path: '/$id'
+      fullPath: '/app/history/$id'
+      preLoaderRoute: typeof AuthenticatedAppHistoryIdRouteImport
+      parentRoute: typeof AuthenticatedAppHistoryRoute
+    }
+    '/_authenticated/admin/users/$id': {
+      id: '/_authenticated/admin/users/$id'
+      path: '/$id'
+      fullPath: '/admin/users/$id'
+      preLoaderRoute: typeof AuthenticatedAdminUsersIdRouteImport
+      parentRoute: typeof AuthenticatedAdminUsersRoute
+    }
   }
 }
 
+interface AuthenticatedAdminUsersRouteChildren {
+  AuthenticatedAdminUsersIdRoute: typeof AuthenticatedAdminUsersIdRoute
+}
+
+const AuthenticatedAdminUsersRouteChildren: AuthenticatedAdminUsersRouteChildren =
+  {
+    AuthenticatedAdminUsersIdRoute: AuthenticatedAdminUsersIdRoute,
+  }
+
+const AuthenticatedAdminUsersRouteWithChildren =
+  AuthenticatedAdminUsersRoute._addFileChildren(
+    AuthenticatedAdminUsersRouteChildren,
+  )
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminDefaultItemRoute: typeof AuthenticatedAdminDefaultItemRoute
+  AuthenticatedAdminItemRoute: typeof AuthenticatedAdminItemRoute
+  AuthenticatedAdminKategoriBarangRoute: typeof AuthenticatedAdminKategoriBarangRoute
+  AuthenticatedAdminKategoriUserRoute: typeof AuthenticatedAdminKategoriUserRoute
+  AuthenticatedAdminTokoRoute: typeof AuthenticatedAdminTokoRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRouteWithChildren
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminDefaultItemRoute: AuthenticatedAdminDefaultItemRoute,
+  AuthenticatedAdminItemRoute: AuthenticatedAdminItemRoute,
+  AuthenticatedAdminKategoriBarangRoute: AuthenticatedAdminKategoriBarangRoute,
+  AuthenticatedAdminKategoriUserRoute: AuthenticatedAdminKategoriUserRoute,
+  AuthenticatedAdminTokoRoute: AuthenticatedAdminTokoRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRouteWithChildren,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedAppHistoryRouteChildren {
+  AuthenticatedAppHistoryIdRoute: typeof AuthenticatedAppHistoryIdRoute
+}
+
+const AuthenticatedAppHistoryRouteChildren: AuthenticatedAppHistoryRouteChildren =
+  {
+    AuthenticatedAppHistoryIdRoute: AuthenticatedAppHistoryIdRoute,
+  }
+
+const AuthenticatedAppHistoryRouteWithChildren =
+  AuthenticatedAppHistoryRoute._addFileChildren(
+    AuthenticatedAppHistoryRouteChildren,
+  )
+
+interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppBelanjaRoute: typeof AuthenticatedAppBelanjaRoute
+  AuthenticatedAppBudgetRoute: typeof AuthenticatedAppBudgetRoute
+  AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
+  AuthenticatedAppFavoritRoute: typeof AuthenticatedAppFavoritRoute
+  AuthenticatedAppGenerateRoute: typeof AuthenticatedAppGenerateRoute
+  AuthenticatedAppHistoryRoute: typeof AuthenticatedAppHistoryRouteWithChildren
+  AuthenticatedAppMulaiBelanjaRoute: typeof AuthenticatedAppMulaiBelanjaRoute
+  AuthenticatedAppProfilRoute: typeof AuthenticatedAppProfilRoute
+  AuthenticatedAppSelesaiRoute: typeof AuthenticatedAppSelesaiRoute
+  AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+}
+
+const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppBelanjaRoute: AuthenticatedAppBelanjaRoute,
+  AuthenticatedAppBudgetRoute: AuthenticatedAppBudgetRoute,
+  AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
+  AuthenticatedAppFavoritRoute: AuthenticatedAppFavoritRoute,
+  AuthenticatedAppGenerateRoute: AuthenticatedAppGenerateRoute,
+  AuthenticatedAppHistoryRoute: AuthenticatedAppHistoryRouteWithChildren,
+  AuthenticatedAppMulaiBelanjaRoute: AuthenticatedAppMulaiBelanjaRoute,
+  AuthenticatedAppProfilRoute: AuthenticatedAppProfilRoute,
+  AuthenticatedAppSelesaiRoute: AuthenticatedAppSelesaiRoute,
+  AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+}
+
+const AuthenticatedAppRouteWithChildren =
+  AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
