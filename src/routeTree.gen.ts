@@ -27,6 +27,7 @@ import { Route as AuthenticatedAppFavoritRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppBudgetRouteImport } from './routes/_authenticated/app.budget'
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminTokoRouteImport } from './routes/_authenticated/admin.toko'
 import { Route as AuthenticatedAdminKategoriUserRouteImport } from './routes/_authenticated/admin.kategori-user'
 import { Route as AuthenticatedAdminKategoriBarangRouteImport } from './routes/_authenticated/admin.kategori-barang'
@@ -127,6 +128,11 @@ const AuthenticatedAppBelanjaRoute = AuthenticatedAppBelanjaRouteImport.update({
   path: '/belanja',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminTokoRoute = AuthenticatedAdminTokoRouteImport.update({
   id: '/toko',
   path: '/toko',
@@ -181,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/admin/toko': typeof AuthenticatedAdminTokoRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/admin/toko': typeof AuthenticatedAdminTokoRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/_authenticated/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/_authenticated/admin/toko': typeof AuthenticatedAdminTokoRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/_authenticated/app/budget': typeof AuthenticatedAppBudgetRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/admin/kategori-barang'
     | '/admin/kategori-user'
     | '/admin/toko'
+    | '/admin/users'
     | '/app/belanja'
     | '/app/budget'
     | '/app/dashboard'
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/admin/kategori-barang'
     | '/admin/kategori-user'
     | '/admin/toko'
+    | '/admin/users'
     | '/app/belanja'
     | '/app/budget'
     | '/app/dashboard'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/kategori-barang'
     | '/_authenticated/admin/kategori-user'
     | '/_authenticated/admin/toko'
+    | '/_authenticated/admin/users'
     | '/_authenticated/app/belanja'
     | '/_authenticated/app/budget'
     | '/_authenticated/app/dashboard'
@@ -461,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBelanjaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/toko': {
       id: '/_authenticated/admin/toko'
       path: '/toko'
@@ -520,6 +539,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminKategoriBarangRoute: typeof AuthenticatedAdminKategoriBarangRoute
   AuthenticatedAdminKategoriUserRoute: typeof AuthenticatedAdminKategoriUserRoute
   AuthenticatedAdminTokoRoute: typeof AuthenticatedAdminTokoRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -530,6 +550,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminKategoriBarangRoute: AuthenticatedAdminKategoriBarangRoute,
   AuthenticatedAdminKategoriUserRoute: AuthenticatedAdminKategoriUserRoute,
   AuthenticatedAdminTokoRoute: AuthenticatedAdminTokoRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
