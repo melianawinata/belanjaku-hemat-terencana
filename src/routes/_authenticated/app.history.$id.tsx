@@ -86,12 +86,13 @@ function EditDialog({ item, toko, userId, onClose, onSaved }: {
   const [tokoId, setTokoId] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useState(() => {});
-  if (item && harga === "" && jumlah === "") {
-    setHarga(String(item.harga_aktual ?? item.estimasi_harga ?? 0));
-    setJumlah(String(item.jumlah));
-    setTokoId(item.toko_id ?? "");
-  }
+  useEffect(() => {
+    if (item) {
+      setHarga(String(item.harga_aktual ?? item.estimasi_harga ?? 0));
+      setJumlah(String(item.jumlah));
+      setTokoId(item.toko_id ?? "");
+    }
+  }, [item]);
 
   const save = async () => {
     if (!item) return;
