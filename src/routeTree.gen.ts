@@ -17,9 +17,11 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppSelesaiRouteImport } from './routes/_authenticated/app.selesai'
 import { Route as AuthenticatedAppMulaiBelanjaRouteImport } from './routes/_authenticated/app.mulai-belanja'
+import { Route as AuthenticatedAppHistoryRouteImport } from './routes/_authenticated/app.history'
 import { Route as AuthenticatedAppGenerateRouteImport } from './routes/_authenticated/app.generate'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
+import { Route as AuthenticatedAppHistoryIdRouteImport } from './routes/_authenticated/app.history.$id'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -61,6 +63,11 @@ const AuthenticatedAppMulaiBelanjaRoute =
     path: '/mulai-belanja',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppHistoryRoute = AuthenticatedAppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppGenerateRoute =
   AuthenticatedAppGenerateRouteImport.update({
     id: '/generate',
@@ -78,6 +85,12 @@ const AuthenticatedAppBelanjaRoute = AuthenticatedAppBelanjaRouteImport.update({
   path: '/belanja',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppHistoryIdRoute =
+  AuthenticatedAppHistoryIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppHistoryRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,8 +101,10 @@ export interface FileRoutesByFullPath {
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,8 +115,10 @@ export interface FileRoutesByTo {
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,8 +131,10 @@ export interface FileRoutesById {
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/_authenticated/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
   '/_authenticated/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/_authenticated/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/_authenticated/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,8 +147,10 @@ export interface FileRouteTypes {
     | '/app/belanja'
     | '/app/dashboard'
     | '/app/generate'
+    | '/app/history'
     | '/app/mulai-belanja'
     | '/app/selesai'
+    | '/app/history/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,8 +161,10 @@ export interface FileRouteTypes {
     | '/app/belanja'
     | '/app/dashboard'
     | '/app/generate'
+    | '/app/history'
     | '/app/mulai-belanja'
     | '/app/selesai'
+    | '/app/history/$id'
   id:
     | '__root__'
     | '/'
@@ -153,8 +176,10 @@ export interface FileRouteTypes {
     | '/_authenticated/app/belanja'
     | '/_authenticated/app/dashboard'
     | '/_authenticated/app/generate'
+    | '/_authenticated/app/history'
     | '/_authenticated/app/mulai-belanja'
     | '/_authenticated/app/selesai'
+    | '/_authenticated/app/history/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -222,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppMulaiBelanjaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/history': {
+      id: '/_authenticated/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AuthenticatedAppHistoryRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/generate': {
       id: '/_authenticated/app/generate'
       path: '/generate'
@@ -243,13 +275,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBelanjaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/history/$id': {
+      id: '/_authenticated/app/history/$id'
+      path: '/$id'
+      fullPath: '/app/history/$id'
+      preLoaderRoute: typeof AuthenticatedAppHistoryIdRouteImport
+      parentRoute: typeof AuthenticatedAppHistoryRoute
+    }
   }
 }
+
+interface AuthenticatedAppHistoryRouteChildren {
+  AuthenticatedAppHistoryIdRoute: typeof AuthenticatedAppHistoryIdRoute
+}
+
+const AuthenticatedAppHistoryRouteChildren: AuthenticatedAppHistoryRouteChildren =
+  {
+    AuthenticatedAppHistoryIdRoute: AuthenticatedAppHistoryIdRoute,
+  }
+
+const AuthenticatedAppHistoryRouteWithChildren =
+  AuthenticatedAppHistoryRoute._addFileChildren(
+    AuthenticatedAppHistoryRouteChildren,
+  )
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBelanjaRoute: typeof AuthenticatedAppBelanjaRoute
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
   AuthenticatedAppGenerateRoute: typeof AuthenticatedAppGenerateRoute
+  AuthenticatedAppHistoryRoute: typeof AuthenticatedAppHistoryRouteWithChildren
   AuthenticatedAppMulaiBelanjaRoute: typeof AuthenticatedAppMulaiBelanjaRoute
   AuthenticatedAppSelesaiRoute: typeof AuthenticatedAppSelesaiRoute
 }
@@ -258,6 +312,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBelanjaRoute: AuthenticatedAppBelanjaRoute,
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
   AuthenticatedAppGenerateRoute: AuthenticatedAppGenerateRoute,
+  AuthenticatedAppHistoryRoute: AuthenticatedAppHistoryRouteWithChildren,
   AuthenticatedAppMulaiBelanjaRoute: AuthenticatedAppMulaiBelanjaRoute,
   AuthenticatedAppSelesaiRoute: AuthenticatedAppSelesaiRoute,
 }
@@ -287,3 +342,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
