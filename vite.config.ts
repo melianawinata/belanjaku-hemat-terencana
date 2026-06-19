@@ -31,6 +31,5 @@ export default defineConfig({
       },
     }),
     viteReact(),
-  ],
-  nitro: true,
+  ]
 });
