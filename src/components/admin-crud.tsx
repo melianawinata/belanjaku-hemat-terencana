@@ -1,6 +1,9 @@
 import { ReactNode, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+
+// dynamic table names require an untyped client
+const sb = supabase as unknown as { from: (t: string) => any };
 import { AdminHeader } from "@/components/admin-shell";
 import { EmptyState, Skeleton } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
@@ -45,7 +48,7 @@ export function AdminCrud({ title, subtitle, table, queryKey, fields, select = "
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: [queryKey],
-    queryFn: async () => (await supabase.from(table).select(select).order("created_at", { ascending: false })).data ?? [],
+    queryFn: async () => (await sb.from(table).select(select).order("created_at", { ascending: false })).data ?? [],
   });
 
   const rows = (data ?? []) as Record<string, unknown>[];
@@ -56,7 +59,7 @@ export function AdminCrud({ title, subtitle, table, queryKey, fields, select = "
   const paged = filtered.slice(page * pageSize, page * pageSize + pageSize);
 
   const remove = async (id: string) => {
-    const { error } = await supabase.from(table).delete().eq("id", id);
+    const { error } = await sb.from(table).delete().eq("id", id);
     if (error) { toast.error("Gagal hapus — mungkin data ini masih dipakai."); return; }
     toast.success("Data dihapus.");
     refetch();
@@ -161,8 +164,8 @@ function CrudDialog({ open, onOpenChange, table, fields, editing, onSaved }: {
     const payload: Record<string, unknown> = {};
     fields.forEach((f) => { payload[f.key] = values[f.key] || null; });
     let error;
-    if (editing) ({ error } = await supabase.from(table).update(payload).eq("id", String(editing.id)));
-    else ({ error } = await supabase.from(table).insert(payload));
+    if (editing) ({ error } = await sb.from(table).update(payload).eq("id", String(editing.id)));
+    else ({ error } = await sb.from(table).insert(payload));
     setSaving(false);
     if (error) { toast.error(error.message.includes("duplicate") ? "Data sudah ada." : error.message); return; }
     toast.success(editing ? "Data diperbarui." : "Data ditambahkan.");
