@@ -31,6 +31,7 @@ import { Route as AuthenticatedAdminTokoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminKategoriUserRouteImport } from './routes/_authenticated/admin.kategori-user'
 import { Route as AuthenticatedAdminKategoriBarangRouteImport } from './routes/_authenticated/admin.kategori-barang'
 import { Route as AuthenticatedAdminItemRouteImport } from './routes/_authenticated/admin.item'
+import { Route as AuthenticatedAdminDefaultItemRouteImport } from './routes/_authenticated/admin.default-item'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
 import { Route as AuthenticatedAppHistoryIdRouteImport } from './routes/_authenticated/app.history.$id'
 
@@ -148,6 +149,12 @@ const AuthenticatedAdminItemRoute = AuthenticatedAdminItemRouteImport.update({
   path: '/item',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminDefaultItemRoute =
+  AuthenticatedAdminDefaultItemRouteImport.update({
+    id: '/default-item',
+    path: '/default-item',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminDashboardRoute =
   AuthenticatedAdminDashboardRouteImport.update({
     id: '/dashboard',
@@ -169,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/admin/item': typeof AuthenticatedAdminItemRoute
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
@@ -192,6 +200,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/admin/item': typeof AuthenticatedAdminItemRoute
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
@@ -219,6 +228,7 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/_authenticated/admin/item': typeof AuthenticatedAdminItemRoute
   '/_authenticated/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/_authenticated/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/onboarding'
     | '/admin/dashboard'
+    | '/admin/default-item'
     | '/admin/item'
     | '/admin/kategori-barang'
     | '/admin/kategori-user'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/onboarding'
     | '/admin/dashboard'
+    | '/admin/default-item'
     | '/admin/item'
     | '/admin/kategori-barang'
     | '/admin/kategori-user'
@@ -295,6 +307,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/_authenticated/onboarding'
     | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/default-item'
     | '/_authenticated/admin/item'
     | '/_authenticated/admin/kategori-barang'
     | '/_authenticated/admin/kategori-user'
@@ -476,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminItemRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/default-item': {
+      id: '/_authenticated/admin/default-item'
+      path: '/default-item'
+      fullPath: '/admin/default-item'
+      preLoaderRoute: typeof AuthenticatedAdminDefaultItemRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/dashboard': {
       id: '/_authenticated/admin/dashboard'
       path: '/dashboard'
@@ -495,6 +515,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminDefaultItemRoute: typeof AuthenticatedAdminDefaultItemRoute
   AuthenticatedAdminItemRoute: typeof AuthenticatedAdminItemRoute
   AuthenticatedAdminKategoriBarangRoute: typeof AuthenticatedAdminKategoriBarangRoute
   AuthenticatedAdminKategoriUserRoute: typeof AuthenticatedAdminKategoriUserRoute
@@ -504,6 +525,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminDefaultItemRoute: AuthenticatedAdminDefaultItemRoute,
   AuthenticatedAdminItemRoute: AuthenticatedAdminItemRoute,
   AuthenticatedAdminKategoriBarangRoute: AuthenticatedAdminKategoriBarangRoute,
   AuthenticatedAdminKategoriUserRoute: AuthenticatedAdminKategoriUserRoute,
