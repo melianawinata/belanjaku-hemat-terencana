@@ -279,8 +279,8 @@ const BODY = `
       </ul>
     </nav>
     <div class="nav-cta">
-      <a href="#" class="login">Masuk</a>
-      <a href="#harga" class="btn btn-primary">Coba Gratis</a>
+      <a href="/auth" class="login">Masuk</a>
+      <a href="/auth" class="btn btn-primary">Coba Gratis</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Buka menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -297,8 +297,8 @@ const BODY = `
   <a href="#cara-kerja">Cara Kerja</a>
   <a href="#harga">Harga</a>
   <a href="#faq">FAQ</a>
-  <a href="#" class="login" style="color:var(--green-dark)">Masuk</a>
-  <a href="#harga" class="btn btn-primary">Coba Gratis</a>
+  <a href="/auth" class="login" style="color:var(--green-dark)">Masuk</a>
+  <a href="/auth" class="btn btn-primary">Coba Gratis</a>
 </nav>
 
 <!-- ============ HERO ============ -->
@@ -311,7 +311,7 @@ const BODY = `
       <h1>Belanja bulanan, kini lebih <span class="grad-text">hemat</span> dan <span class="grad-text">terencana</span>.</h1>
       <p class="sub">BelanjaKu menggabungkan daftar belanja pintar, histori harga, dan kontrol budget — supaya kamu nggak lagi lupa kebutuhan rumah atau kaget lihat total di kasir.</p>
       <div class="hero-cta">
-        <a href="#harga" class="btn btn-primary">Coba Gratis Sekarang
+        <a href="/auth" class="btn btn-primary">Coba Gratis Sekarang
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
         <a href="#cara-kerja" class="btn btn-ghost">Lihat Cara Kerja</a>
@@ -745,7 +745,7 @@ const BODY = `
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Kontrol budget dasar</li>
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>1 perangkat</li>
         </ul>
-        <a href="#" class="btn btn-ghost">Mulai Gratis</a>
+        <a href="/auth" class="btn btn-ghost">Mulai Gratis</a>
       </div>
       <!-- Plus -->
       <div class="plan pop reveal">
