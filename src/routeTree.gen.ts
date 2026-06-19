@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedAppMulaiBelanjaRouteImport } from './routes/_authenticated/app.mulai-belanja'
 import { Route as AuthenticatedAppGenerateRouteImport } from './routes/_authenticated/app.generate'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
@@ -48,6 +49,12 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   path: '/app',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppMulaiBelanjaRoute =
+  AuthenticatedAppMulaiBelanjaRouteImport.update({
+    id: '/mulai-belanja',
+    path: '/mulai-belanja',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppGenerateRoute =
   AuthenticatedAppGenerateRouteImport.update({
     id: '/generate',
@@ -75,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesByTo {
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,6 +106,7 @@ export interface FileRoutesById {
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/_authenticated/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/app/belanja'
     | '/app/dashboard'
     | '/app/generate'
+    | '/app/mulai-belanja'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/app/belanja'
     | '/app/dashboard'
     | '/app/generate'
+    | '/app/mulai-belanja'
   id:
     | '__root__'
     | '/'
@@ -130,6 +142,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/belanja'
     | '/_authenticated/app/dashboard'
     | '/_authenticated/app/generate'
+    | '/_authenticated/app/mulai-belanja'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/mulai-belanja': {
+      id: '/_authenticated/app/mulai-belanja'
+      path: '/mulai-belanja'
+      fullPath: '/app/mulai-belanja'
+      preLoaderRoute: typeof AuthenticatedAppMulaiBelanjaRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/generate': {
       id: '/_authenticated/app/generate'
       path: '/generate'
@@ -211,12 +231,14 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBelanjaRoute: typeof AuthenticatedAppBelanjaRoute
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
   AuthenticatedAppGenerateRoute: typeof AuthenticatedAppGenerateRoute
+  AuthenticatedAppMulaiBelanjaRoute: typeof AuthenticatedAppMulaiBelanjaRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBelanjaRoute: AuthenticatedAppBelanjaRoute,
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
   AuthenticatedAppGenerateRoute: AuthenticatedAppGenerateRoute,
+  AuthenticatedAppMulaiBelanjaRoute: AuthenticatedAppMulaiBelanjaRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =
