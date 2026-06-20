@@ -47,7 +47,7 @@ function SelesaiPage() {
     // write histori_harga for purchased items with a real item_id
     const historiRows = dibeli
       .filter((i) => i.item_id && i.harga_aktual != null)
-      .map((i) => ({ item_id: i.item_id!, user_id: userId!, harga: Number(i.harga_aktual), toko_id: i.toko_id, tanggal: new Date().toISOString() }));
+      .map((i) => ({ item_id: i.item_id!, user_id: userId!, harga: Number(i.harga_aktual), merk: i.merk, toko_id: i.toko_id, tanggal: new Date().toISOString() }));
     if (historiRows.length > 0) await supabase.from("histori_harga").insert(historiRows);
     await supabase.from("belanja_bulanan").update({ status: "selesai", selesai_at: new Date().toISOString() }).eq("id", belanja.id);
     await logActivity(userId!, "selesai", `Selesai belanja ${namaBulan(bulan)} ${tahun} — total ${formatRupiah(realisasi)}`);
@@ -87,7 +87,7 @@ function SelesaiPage() {
           <ul className="divide-y">
             {dibeli.map((i) => (
               <li key={i.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                <span>{i.nama_snapshot} <span className="font-mono text-xs text-muted-foreground">· {i.jumlah} {i.satuan}</span></span>
+                <span>{i.nama_snapshot}{i.merk && <span className="text-xs text-muted-foreground"> ({i.merk})</span>} <span className="font-mono text-xs text-muted-foreground">· {i.jumlah} {i.satuan}</span></span>
                 <span className="font-mono">{formatRupiah(i.harga_aktual)}</span>
               </li>
             ))}

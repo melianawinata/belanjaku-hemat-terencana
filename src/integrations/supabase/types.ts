@@ -82,6 +82,7 @@ export type Database = {
           item_id: string | null
           jumlah: number
           kategori_barang_id: string | null
+          merk: string | null
           nama_snapshot: string
           satuan: string
           sudah_dibeli: boolean
@@ -98,6 +99,7 @@ export type Database = {
           item_id?: string | null
           jumlah?: number
           kategori_barang_id?: string | null
+          merk?: string | null
           nama_snapshot: string
           satuan?: string
           sudah_dibeli?: boolean
@@ -114,6 +116,7 @@ export type Database = {
           item_id?: string | null
           jumlah?: number
           kategori_barang_id?: string | null
+          merk?: string | null
           nama_snapshot?: string
           satuan?: string
           sudah_dibeli?: boolean
@@ -193,6 +196,7 @@ export type Database = {
           harga: number
           id: string
           item_id: string
+          merk: string | null
           tanggal: string
           toko_id: string | null
           user_id: string
@@ -202,6 +206,7 @@ export type Database = {
           harga: number
           id?: string
           item_id: string
+          merk?: string | null
           tanggal?: string
           toko_id?: string | null
           user_id: string
@@ -211,6 +216,7 @@ export type Database = {
           harga?: number
           id?: string
           item_id?: string
+          merk?: string | null
           tanggal?: string
           toko_id?: string | null
           user_id?: string

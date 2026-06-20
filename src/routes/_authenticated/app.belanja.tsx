@@ -133,7 +133,10 @@ function BelanjaPage() {
                   {rows.map((i) => (
                     <li key={i.id} className="flex items-center gap-3 px-4 py-3">
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">{i.nama_snapshot}</p>
+                        <p className="truncate text-sm font-medium">
+                          {i.nama_snapshot}
+                          {i.merk && <span className="ml-1.5 rounded bg-muted px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">{i.merk}</span>}
+                        </p>
                         <p className="font-mono text-xs text-muted-foreground">
                           {formatRupiah(i.estimasi_harga)} / {i.satuan} · subtotal {formatRupiah(Number(i.estimasi_harga) * Number(i.jumlah))}
                         </p>
@@ -194,6 +197,7 @@ function AddItemDialog({ belanjaId, userId, onDone }: { belanjaId: string; userI
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ id: string | null; nama: string; kategori_barang_id: string | null; satuan: string } | null>(null);
   const [manualNama, setManualNama] = useState("");
+  const [merk, setMerk] = useState("");
   const [jumlah, setJumlah] = useState("1");
   const [satuan, setSatuan] = useState("pcs");
   const [saving, setSaving] = useState(false);
@@ -206,16 +210,17 @@ function AddItemDialog({ belanjaId, userId, onDone }: { belanjaId: string; userI
     },
   });
 
-  const reset = () => { setSelectedItem(null); setManualNama(""); setJumlah("1"); setSatuan("pcs"); };
+  const reset = () => { setSelectedItem(null); setManualNama(""); setMerk(""); setJumlah("1"); setSatuan("pcs"); };
 
   const save = async () => {
     const nama = selectedItem?.nama || manualNama.trim();
     if (!nama) { toast.error("Pilih atau ketik nama item."); return; }
     setSaving(true);
-    const estimasi = selectedItem?.id ? await getEstimasiHarga(userId, selectedItem.id) : 0;
+    const merkVal = merk.trim() || null;
+    const estimasi = selectedItem?.id ? await getEstimasiHarga(userId, selectedItem.id, merkVal) : 0;
     await supabase.from("belanja_item").insert({
       belanja_id: belanjaId, user_id: userId, item_id: selectedItem?.id ?? null,
-      nama_snapshot: nama, kategori_barang_id: selectedItem?.kategori_barang_id ?? null,
+      nama_snapshot: nama, merk: merkVal, kategori_barang_id: selectedItem?.kategori_barang_id ?? null,
       jumlah: Number(jumlah) || 1, satuan, estimasi_harga: estimasi,
     });
     setSaving(false);
@@ -264,6 +269,10 @@ function AddItemDialog({ belanjaId, userId, onDone }: { belanjaId: string; userI
           <div className="space-y-1.5">
             <Label>Atau ketik item baru</Label>
             <Input value={manualNama} onChange={(e) => { setManualNama(e.target.value); setSelectedItem(null); }} placeholder="Nama item baru" />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Merk / Varian <span className="font-normal text-muted-foreground">(opsional)</span></Label>
+            <Input value={merk} onChange={(e) => setMerk(e.target.value)} placeholder="mis. Merk A, kemasan 5kg" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">

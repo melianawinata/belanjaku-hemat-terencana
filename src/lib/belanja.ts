@@ -5,6 +5,7 @@ export interface BelanjaItemRow {
   belanja_id: string;
   item_id: string | null;
   nama_snapshot: string;
+  merk: string | null;
   kategori_barang_id: string | null;
   jumlah: number;
   satuan: string;
@@ -26,17 +27,27 @@ export interface BelanjaBulananRow {
   selesai_at: string | null;
 }
 
-/** Get estimated price for an item from the user's latest histori_harga. */
-export async function getEstimasiHarga(userId: string, itemId: string | null): Promise<number> {
+/**
+ * Get estimated price for an item from the user's latest histori_harga.
+ * When `merk` is given, prefer the latest price for that specific brand so
+ * different brands of the same item don't overwrite each other's estimate.
+ */
+export async function getEstimasiHarga(
+  userId: string,
+  itemId: string | null,
+  merk?: string | null,
+): Promise<number> {
   if (!itemId) return 0;
-  const { data } = await supabase
+  let query = supabase
     .from("histori_harga")
     .select("harga")
     .eq("item_id", itemId)
-    .eq("user_id", userId)
-    .order("tanggal", { ascending: false })
-    .limit(1);
+    .eq("user_id", userId);
+  if (merk) query = query.eq("merk", merk);
+  const { data } = await query.order("tanggal", { ascending: false }).limit(1);
   if (data && data.length > 0) return Number(data[0].harga);
+  // Fallback: if no brand-specific history, use the item's latest price overall.
+  if (merk) return getEstimasiHarga(userId, itemId, null);
   return 0;
 }
 

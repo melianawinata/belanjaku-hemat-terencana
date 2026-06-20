@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Pencil, Loader2 } from "lucide-react";
+import { ArrowLeft, Pencil, Loader2, CheckCircle2, Circle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/history/$id")({
   head: () => ({ meta: [{ title: "Detail History — BelanjaKu" }] }),
@@ -42,6 +42,9 @@ function HistoryDetail() {
   const items = data?.items ?? [];
   const tokoMap = new Map((data?.toko ?? []).map((t) => [t.id, t.nama]));
   const total = items.filter((i) => i.sudah_dibeli && i.harga_aktual != null).reduce((s, i) => s + Number(i.harga_aktual), 0);
+  const dibeli = items.filter((i) => i.sudah_dibeli).length;
+  // Tampilkan item yang sudah dibeli di atas, sisanya mengikuti urutan asli (created_at).
+  const sortedItems = [...items].sort((a, b) => Number(b.sudah_dibeli) - Number(a.sudah_dibeli));
 
   return (
     <>
@@ -52,7 +55,7 @@ function HistoryDetail() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <StatCard label="Total Pengeluaran" value={formatRupiah(total)} tone="success" />
           <StatCard label="Budget" value={formatRupiah(Number(belanja?.budget ?? 0))} />
-          <StatCard label="Jumlah Item" value={items.length} />
+          <StatCard label="Item Dibeli" value={`${dibeli}/${items.length}`} />
         </div>
 
         <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
@@ -60,12 +63,23 @@ function HistoryDetail() {
             <span>Item</span><span>Jumlah</span><span>Toko</span><span className="text-right">Harga</span><span></span>
           </div>
           <ul className="divide-y">
-            {items.map((i) => (
-              <li key={i.id} className="grid grid-cols-[2fr_1fr_auto] items-center gap-2 px-4 py-3 text-sm sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
-                <span className="font-medium">{i.nama_snapshot}</span>
+            {sortedItems.map((i) => (
+              <li key={i.id} className={`grid grid-cols-[2fr_1fr_auto] items-center gap-2 px-4 py-3 text-sm sm:grid-cols-[2fr_1fr_1fr_1fr_auto] ${i.sudah_dibeli ? "" : "bg-muted/20"}`}>
+                <span className="flex items-center gap-2 font-medium">
+                  {i.sudah_dibeli
+                    ? <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
+                    : <Circle className="h-4 w-4 shrink-0 text-muted-foreground/40" />}
+                  <span className={i.sudah_dibeli ? "" : "text-muted-foreground"}>
+                    {i.nama_snapshot}{i.merk && <span className="ml-1 text-xs font-normal text-muted-foreground">({i.merk})</span>}
+                  </span>
+                </span>
                 <span className="font-mono text-xs text-muted-foreground">{i.jumlah} {i.satuan}</span>
                 <span className="hidden text-xs text-muted-foreground sm:block">{i.toko_id ? tokoMap.get(i.toko_id) : "-"}</span>
-                <span className="hidden text-right font-mono sm:block">{formatRupiah(i.harga_aktual ?? i.estimasi_harga)}</span>
+                <span className="hidden text-right font-mono sm:block">
+                  {i.sudah_dibeli
+                    ? formatRupiah(i.harga_aktual ?? 0)
+                    : <span className="text-muted-foreground">est. {formatRupiah(i.estimasi_harga)}</span>}
+                </span>
                 <Button variant="ghost" size="icon" onClick={() => setEditing(i)}><Pencil className="h-4 w-4" /></Button>
               </li>
             ))}
@@ -101,7 +115,7 @@ function EditDialog({ item, toko, userId, onClose, onSaved }: {
       harga_aktual: Number(harga), jumlah: Number(jumlah), toko_id: tokoId || null,
     }).eq("id", item.id);
     if (item.item_id) {
-      await supabase.from("histori_harga").insert({ item_id: item.item_id, user_id: userId, harga: Number(harga), toko_id: tokoId || null, tanggal: new Date().toISOString() });
+      await supabase.from("histori_harga").insert({ item_id: item.item_id, user_id: userId, harga: Number(harga), merk: item.merk, toko_id: tokoId || null, tanggal: new Date().toISOString() });
     }
     await logActivity(userId, "edit", `Edit history item ${item.nama_snapshot}`);
     setSaving(false);

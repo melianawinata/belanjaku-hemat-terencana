@@ -86,7 +86,7 @@ function MulaiBelanja() {
               <Checkbox className="mt-1" checked={i.sudah_dibeli} onCheckedChange={(v) => toggle(i, !!v)} />
               <div className="min-w-0 flex-1">
                 <p className={`text-sm font-medium ${i.sudah_dibeli ? "text-muted-foreground line-through" : ""}`}>
-                  {i.nama_snapshot} <span className="font-mono text-xs text-muted-foreground">· {i.jumlah} {i.satuan}</span>
+                  {i.nama_snapshot}{i.merk && <span className="font-normal text-muted-foreground"> ({i.merk})</span>} <span className="font-mono text-xs text-muted-foreground">· {i.jumlah} {i.satuan}</span>
                 </p>
                 <p className="font-mono text-xs text-muted-foreground">Estimasi {formatRupiah(i.estimasi_harga)}</p>
                 {i.sudah_dibeli && (
