@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
@@ -16,7 +17,7 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { ShoppingCart, CheckCircle2 } from "lucide-react";
+import { ShoppingCart, CheckCircle2, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/mulai-belanja")({
   head: () => ({ meta: [{ title: "Mulai Belanja — BelanjaKu" }] }),
@@ -93,7 +94,7 @@ function MulaiBelanja() {
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <div className="space-y-1">
                       <Label className="text-xs">Harga aktual</Label>
-                      <Input type="number" value={i.harga_aktual ?? ""} onChange={(e) => setHarga(i.id, Number(e.target.value))} className="h-9" />
+                      <HargaInput value={i.harga_aktual} onCommit={(h) => setHarga(i.id, h)} />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">Toko</Label>
@@ -140,5 +141,64 @@ function MulaiBelanja() {
         </div>
       </div>
     </>
+  );
+}
+
+/**
+ * Harga input with local draft state so typing is instant (no per-keystroke
+ * network write). Commits on blur / Enter / ✓; reverts on Esc / ✕. Auto-selects
+ * on focus so the user can overwrite immediately.
+ */
+function HargaInput({ value, onCommit }: { value: number | null; onCommit: (harga: number) => void }) {
+  const asStr = value != null ? String(value) : "";
+  const [draft, setDraft] = useState(asStr);
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const guard = useRef(false); // once true, block commit until next focus
+
+  // Keep draft in sync with server value while not actively editing.
+  useEffect(() => { if (!editing) setDraft(asStr); }, [asStr, editing]);
+
+  const commit = () => {
+    if (guard.current) return;
+    guard.current = true;
+    const n = Number(draft);
+    if (draft.trim() !== "" && !Number.isNaN(n) && n !== (value ?? null)) onCommit(n);
+    setEditing(false);
+    inputRef.current?.blur();
+  };
+  const cancel = () => {
+    guard.current = true;
+    setDraft(asStr);
+    setEditing(false);
+    inputRef.current?.blur();
+  };
+
+  return (
+    <div className="flex items-center gap-1">
+      <Input
+        ref={inputRef}
+        type="number"
+        inputMode="decimal"
+        value={draft}
+        onFocus={(e) => { guard.current = false; setEditing(true); e.target.select(); }}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => { if (e.key === "Enter") commit(); else if (e.key === "Escape") cancel(); }}
+        className="h-9"
+      />
+      {editing && (
+        <>
+          <Button type="button" size="icon" variant="ghost" aria-label="Simpan harga"
+            className="h-9 w-9 shrink-0 text-success" onMouseDown={(e) => e.preventDefault()} onClick={commit}>
+            <Check className="h-4 w-4" />
+          </Button>
+          <Button type="button" size="icon" variant="ghost" aria-label="Batal"
+            className="h-9 w-9 shrink-0 text-muted-foreground" onMouseDown={(e) => e.preventDefault()} onClick={cancel}>
+            <X className="h-4 w-4" />
+          </Button>
+        </>
+      )}
+    </div>
   );
 }

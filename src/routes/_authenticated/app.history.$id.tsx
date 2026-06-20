@@ -130,8 +130,8 @@ function EditDialog({ item, toko, userId, onClose, onSaved }: {
         <DialogHeader><DialogTitle>Edit {item?.nama_snapshot}</DialogTitle></DialogHeader>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5"><Label>Harga</Label><Input type="number" value={harga} onChange={(e) => setHarga(e.target.value)} /></div>
-            <div className="space-y-1.5"><Label>Jumlah</Label><Input type="number" value={jumlah} onChange={(e) => setJumlah(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label>Harga</Label><Input type="number" inputMode="decimal" value={harga} onFocus={(e) => e.target.select()} onChange={(e) => setHarga(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label>Jumlah</Label><Input type="number" inputMode="decimal" value={jumlah} onFocus={(e) => e.target.select()} onChange={(e) => setJumlah(e.target.value)} /></div>
           </div>
           <div className="space-y-1.5">
             <Label>Toko</Label>
@@ -141,8 +141,9 @@ function EditDialog({ item, toko, userId, onClose, onSaved }: {
             </Select>
           </div>
         </div>
-        <DialogFooter>
-          <Button onClick={save} disabled={saving} className="w-full">
+        <DialogFooter className="flex-row gap-2">
+          <Button variant="outline" onClick={onClose} disabled={saving} className="flex-1">Batal</Button>
+          <Button onClick={save} disabled={saving} className="flex-1">
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Simpan Perubahan
           </Button>
         </DialogFooter>
