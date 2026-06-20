@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, logActivity } from "@/lib/useAuth";
 import { bulanIni, formatRupiah, namaBulan } from "@/lib/format";
-import { getOrCreateBelanja, getEstimasiHarga, totalEstimasi, BelanjaItemRow } from "@/lib/belanja";
+import { getOrCreateBelanja, getEstimasiHarga, totalEstimasi, totalRealisasi, BelanjaItemRow } from "@/lib/belanja";
 import { PageHeader } from "@/components/app-shell";
 import { EmptyState, Skeleton } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,8 @@ function BelanjaPage() {
   const budget = Number(belanja?.budget ?? 0);
   const estimasi = totalEstimasi(items);
   const ratio = budget > 0 ? estimasi / budget : 0;
+  const dibeliTotal = totalRealisasi(items);
+  const dibeliCount = items.filter((i) => i.sudah_dibeli).length;
 
   // If already shopping, send to mulai-belanja
   if (belanja?.status === "belanja") {
@@ -136,6 +138,7 @@ function BelanjaPage() {
                         <p className="truncate text-sm font-medium">
                           {i.nama_snapshot}
                           {i.merk && <span className="ml-1.5 rounded bg-muted px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">{i.merk}</span>}
+                          {i.sudah_dibeli && <span className="ml-1.5 inline-flex items-center gap-0.5 rounded bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success"><Check className="h-3 w-3" /> Dibeli</span>}
                         </p>
                         <p className="font-mono text-xs text-muted-foreground">
                           {formatRupiah(i.estimasi_harga)} / {i.satuan} · subtotal {formatRupiah(Number(i.estimasi_harga) * Number(i.jumlah))}
@@ -164,6 +167,9 @@ function BelanjaPage() {
                 <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Total Estimasi</p>
                 <p className="font-mono text-xl font-semibold">{formatRupiah(estimasi)}</p>
                 {budget > 0 && <p className="text-xs text-muted-foreground">dari budget {formatRupiah(budget)}</p>}
+                {dibeliCount > 0 && (
+                  <p className="mt-1 font-mono text-xs text-success">Sudah dibeli: {formatRupiah(dibeliTotal)} ({dibeliCount} item)</p>
+                )}
               </div>
               <AlertDialog>
                 <AlertDialogTrigger asChild>

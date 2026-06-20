@@ -41,7 +41,7 @@ function Dashboard() {
       const { data: allBelanja } = await supabase
         .from("belanja_bulanan").select("*").eq("user_id", userId!).order("tahun").order("bulan");
       const { data: histori } = await supabase
-        .from("histori_harga").select("harga, tanggal, item_id, item:item_id(nama)")
+        .from("histori_harga").select("harga, tanggal, item_id, merk, item:item_id(nama)")
         .eq("user_id", userId!).order("tanggal", { ascending: false });
 
       // per-month aggregates (realisasi) from all selesai belanja
@@ -85,11 +85,14 @@ function Dashboard() {
   const katNama = new Map((data?.kategoriBarang ?? []).map((k) => [k.id, k.nama]));
   const pieData = [...katMap.entries()].map(([k, v]) => ({ name: katNama.get(k) ?? "Lainnya", value: v })).filter((d) => d.value > 0);
 
-  // insights: price up/down
+  // insights: price up/down — compared per item + merk so different brands
+  // of the same item aren't compared against each other.
   const latestByItem = new Map<string, { nama: string; harga: number; prev?: number }>();
   for (const h of data?.histori ?? []) {
-    const key = h.item_id;
-    const nama = (h.item as { nama: string } | null)?.nama ?? "Item";
+    const merk = (h as { merk: string | null }).merk;
+    const key = `${h.item_id}__${merk ?? ""}`;
+    const baseNama = (h.item as { nama: string } | null)?.nama ?? "Item";
+    const nama = merk ? `${baseNama} (${merk})` : baseNama;
     if (!latestByItem.has(key)) latestByItem.set(key, { nama, harga: Number(h.harga) });
     else { const e = latestByItem.get(key)!; if (e.prev === undefined) e.prev = Number(h.harga); }
   }

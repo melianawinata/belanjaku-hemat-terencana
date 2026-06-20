@@ -58,6 +58,7 @@ function MulaiBelanja() {
   };
   const setHarga = async (id: string, harga: number) => { await supabase.from("belanja_item").update({ harga_aktual: harga }).eq("id", id); refetch(); };
   const setToko = async (id: string, toko_id: string) => { await supabase.from("belanja_item").update({ toko_id }).eq("id", id); refetch(); };
+  const setMerk = async (id: string, merk: string | null) => { await supabase.from("belanja_item").update({ merk }).eq("id", id); refetch(); };
 
   const selesai = async () => {
     if (!belanja) return;
@@ -91,19 +92,27 @@ function MulaiBelanja() {
                 </p>
                 <p className="font-mono text-xs text-muted-foreground">Estimasi {formatRupiah(i.estimasi_harga)}</p>
                 {i.sudah_dibeli && (
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <Label className="text-xs">Harga aktual</Label>
-                      <HargaInput value={i.harga_aktual} onCommit={(h) => setHarga(i.id, h)} />
+                  <div className="mt-3 space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs">Harga aktual</Label>
+                        <DraftInput type="number" value={i.harga_aktual != null ? String(i.harga_aktual) : ""}
+                          onCommit={(raw) => { const n = Number(raw); if (raw.trim() !== "" && !Number.isNaN(n)) setHarga(i.id, n); }} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Toko</Label>
+                        <Select value={i.toko_id ?? ""} onValueChange={(v) => setToko(i.id, v)}>
+                          <SelectTrigger className="h-9"><SelectValue placeholder="Pilih toko" /></SelectTrigger>
+                          <SelectContent>
+                            {(data?.toko ?? []).map((t) => <SelectItem key={t.id} value={t.id}>{t.nama}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Toko</Label>
-                      <Select value={i.toko_id ?? ""} onValueChange={(v) => setToko(i.id, v)}>
-                        <SelectTrigger className="h-9"><SelectValue placeholder="Pilih toko" /></SelectTrigger>
-                        <SelectContent>
-                          {(data?.toko ?? []).map((t) => <SelectItem key={t.id} value={t.id}>{t.nama}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
+                      <Label className="text-xs">Merk / Varian <span className="font-normal text-muted-foreground">(yang benar-benar dibeli)</span></Label>
+                      <DraftInput value={i.merk ?? ""} placeholder="mis. Merk B"
+                        onCommit={(raw) => setMerk(i.id, raw.trim() || null)} />
                     </div>
                   </div>
                 )}
@@ -145,31 +154,31 @@ function MulaiBelanja() {
 }
 
 /**
- * Harga input with local draft state so typing is instant (no per-keystroke
+ * Text/number input with local draft state so typing is instant (no per-keystroke
  * network write). Commits on blur / Enter / ✓; reverts on Esc / ✕. Auto-selects
- * on focus so the user can overwrite immediately.
+ * on focus so the user can overwrite immediately. Used for both harga & merk.
  */
-function HargaInput({ value, onCommit }: { value: number | null; onCommit: (harga: number) => void }) {
-  const asStr = value != null ? String(value) : "";
-  const [draft, setDraft] = useState(asStr);
+function DraftInput({ value, onCommit, type = "text", placeholder }: {
+  value: string; onCommit: (raw: string) => void; type?: "text" | "number"; placeholder?: string;
+}) {
+  const [draft, setDraft] = useState(value);
   const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const guard = useRef(false); // once true, block commit until next focus
 
   // Keep draft in sync with server value while not actively editing.
-  useEffect(() => { if (!editing) setDraft(asStr); }, [asStr, editing]);
+  useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
 
   const commit = () => {
     if (guard.current) return;
     guard.current = true;
-    const n = Number(draft);
-    if (draft.trim() !== "" && !Number.isNaN(n) && n !== (value ?? null)) onCommit(n);
+    if (draft !== value) onCommit(draft);
     setEditing(false);
     inputRef.current?.blur();
   };
   const cancel = () => {
     guard.current = true;
-    setDraft(asStr);
+    setDraft(value);
     setEditing(false);
     inputRef.current?.blur();
   };
@@ -178,9 +187,10 @@ function HargaInput({ value, onCommit }: { value: number | null; onCommit: (harg
     <div className="flex items-center gap-1">
       <Input
         ref={inputRef}
-        type="number"
-        inputMode="decimal"
+        type={type}
+        inputMode={type === "number" ? "decimal" : undefined}
         value={draft}
+        placeholder={placeholder}
         onFocus={(e) => { guard.current = false; setEditing(true); e.target.select(); }}
         onChange={(e) => setDraft(e.target.value)}
         onBlur={commit}
@@ -189,7 +199,7 @@ function HargaInput({ value, onCommit }: { value: number | null; onCommit: (harg
       />
       {editing && (
         <>
-          <Button type="button" size="icon" variant="ghost" aria-label="Simpan harga"
+          <Button type="button" size="icon" variant="ghost" aria-label="Simpan"
             className="h-9 w-9 shrink-0 text-success" onMouseDown={(e) => e.preventDefault()} onClick={commit}>
             <Check className="h-4 w-4" />
           </Button>
