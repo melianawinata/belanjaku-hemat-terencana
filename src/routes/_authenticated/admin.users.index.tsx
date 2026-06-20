@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { formatTanggal } from "@/lib/format";
 import { Search, ChevronRight, Users } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin/users")({
+export const Route = createFileRoute("/_authenticated/admin/users/")({
   head: () => ({ meta: [{ title: "Daftar User — Admin BelanjaKu" }] }),
   component: UsersPage,
 });

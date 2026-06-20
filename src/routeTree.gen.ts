@@ -21,19 +21,19 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAppSelesaiRouteImport } from './routes/_authenticated/app.selesai'
 import { Route as AuthenticatedAppProfilRouteImport } from './routes/_authenticated/app.profil'
 import { Route as AuthenticatedAppMulaiBelanjaRouteImport } from './routes/_authenticated/app.mulai-belanja'
-import { Route as AuthenticatedAppHistoryRouteImport } from './routes/_authenticated/app.history'
 import { Route as AuthenticatedAppGenerateRouteImport } from './routes/_authenticated/app.generate'
 import { Route as AuthenticatedAppFavoritRouteImport } from './routes/_authenticated/app.favorit'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppBudgetRouteImport } from './routes/_authenticated/app.budget'
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
-import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminTokoRouteImport } from './routes/_authenticated/admin.toko'
 import { Route as AuthenticatedAdminKategoriUserRouteImport } from './routes/_authenticated/admin.kategori-user'
 import { Route as AuthenticatedAdminKategoriBarangRouteImport } from './routes/_authenticated/admin.kategori-barang'
 import { Route as AuthenticatedAdminItemRouteImport } from './routes/_authenticated/admin.item'
 import { Route as AuthenticatedAdminDefaultItemRouteImport } from './routes/_authenticated/admin.default-item'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
+import { Route as AuthenticatedAppHistoryIndexRouteImport } from './routes/_authenticated/app.history.index'
+import { Route as AuthenticatedAdminUsersIndexRouteImport } from './routes/_authenticated/admin.users.index'
 import { Route as AuthenticatedAppHistoryIdRouteImport } from './routes/_authenticated/app.history.$id'
 import { Route as AuthenticatedAdminUsersIdRouteImport } from './routes/_authenticated/admin.users.$id'
 
@@ -97,11 +97,6 @@ const AuthenticatedAppMulaiBelanjaRoute =
     path: '/mulai-belanja',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAppHistoryRoute = AuthenticatedAppHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => AuthenticatedAppRoute,
-} as any)
 const AuthenticatedAppGenerateRoute =
   AuthenticatedAppGenerateRouteImport.update({
     id: '/generate',
@@ -128,11 +123,6 @@ const AuthenticatedAppBelanjaRoute = AuthenticatedAppBelanjaRouteImport.update({
   id: '/belanja',
   path: '/belanja',
   getParentRoute: () => AuthenticatedAppRoute,
-} as any)
-const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedAdminTokoRoute = AuthenticatedAdminTokoRouteImport.update({
   id: '/toko',
@@ -168,17 +158,29 @@ const AuthenticatedAdminDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAppHistoryIndexRoute =
+  AuthenticatedAppHistoryIndexRouteImport.update({
+    id: '/history/',
+    path: '/history/',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAdminUsersIndexRoute =
+  AuthenticatedAdminUsersIndexRouteImport.update({
+    id: '/users/',
+    path: '/users/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAppHistoryIdRoute =
   AuthenticatedAppHistoryIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedAppHistoryRoute,
+    id: '/history/$id',
+    path: '/history/$id',
+    getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAdminUsersIdRoute =
   AuthenticatedAdminUsersIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedAdminUsersRoute,
+    id: '/users/$id',
+    path: '/users/$id',
+    getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -194,13 +196,11 @@ export interface FileRoutesByFullPath {
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/admin/toko': typeof AuthenticatedAdminTokoRoute
-  '/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/favorit': typeof AuthenticatedAppFavoritRoute
   '/app/generate': typeof AuthenticatedAppGenerateRoute
-  '/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/profil': typeof AuthenticatedAppProfilRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
@@ -208,6 +208,8 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AuthenticatedAppIndexRoute
   '/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
   '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
+  '/admin/users/': typeof AuthenticatedAdminUsersIndexRoute
+  '/app/history/': typeof AuthenticatedAppHistoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -220,13 +222,11 @@ export interface FileRoutesByTo {
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/admin/toko': typeof AuthenticatedAdminTokoRoute
-  '/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/favorit': typeof AuthenticatedAppFavoritRoute
   '/app/generate': typeof AuthenticatedAppGenerateRoute
-  '/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/profil': typeof AuthenticatedAppProfilRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
@@ -234,6 +234,8 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppIndexRoute
   '/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
   '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
+  '/admin/users': typeof AuthenticatedAdminUsersIndexRoute
+  '/app/history': typeof AuthenticatedAppHistoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -250,13 +252,11 @@ export interface FileRoutesById {
   '/_authenticated/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/_authenticated/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/_authenticated/admin/toko': typeof AuthenticatedAdminTokoRoute
-  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
   '/_authenticated/app/budget': typeof AuthenticatedAppBudgetRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/app/favorit': typeof AuthenticatedAppFavoritRoute
   '/_authenticated/app/generate': typeof AuthenticatedAppGenerateRoute
-  '/_authenticated/app/history': typeof AuthenticatedAppHistoryRouteWithChildren
   '/_authenticated/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/_authenticated/app/profil': typeof AuthenticatedAppProfilRoute
   '/_authenticated/app/selesai': typeof AuthenticatedAppSelesaiRoute
@@ -264,6 +264,8 @@ export interface FileRoutesById {
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
   '/_authenticated/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
+  '/_authenticated/admin/users/': typeof AuthenticatedAdminUsersIndexRoute
+  '/_authenticated/app/history/': typeof AuthenticatedAppHistoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -280,13 +282,11 @@ export interface FileRouteTypes {
     | '/admin/kategori-barang'
     | '/admin/kategori-user'
     | '/admin/toko'
-    | '/admin/users'
     | '/app/belanja'
     | '/app/budget'
     | '/app/dashboard'
     | '/app/favorit'
     | '/app/generate'
-    | '/app/history'
     | '/app/mulai-belanja'
     | '/app/profil'
     | '/app/selesai'
@@ -294,6 +294,8 @@ export interface FileRouteTypes {
     | '/app/'
     | '/admin/users/$id'
     | '/app/history/$id'
+    | '/admin/users/'
+    | '/app/history/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -306,13 +308,11 @@ export interface FileRouteTypes {
     | '/admin/kategori-barang'
     | '/admin/kategori-user'
     | '/admin/toko'
-    | '/admin/users'
     | '/app/belanja'
     | '/app/budget'
     | '/app/dashboard'
     | '/app/favorit'
     | '/app/generate'
-    | '/app/history'
     | '/app/mulai-belanja'
     | '/app/profil'
     | '/app/selesai'
@@ -320,6 +320,8 @@ export interface FileRouteTypes {
     | '/app'
     | '/admin/users/$id'
     | '/app/history/$id'
+    | '/admin/users'
+    | '/app/history'
   id:
     | '__root__'
     | '/'
@@ -335,13 +337,11 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/kategori-barang'
     | '/_authenticated/admin/kategori-user'
     | '/_authenticated/admin/toko'
-    | '/_authenticated/admin/users'
     | '/_authenticated/app/belanja'
     | '/_authenticated/app/budget'
     | '/_authenticated/app/dashboard'
     | '/_authenticated/app/favorit'
     | '/_authenticated/app/generate'
-    | '/_authenticated/app/history'
     | '/_authenticated/app/mulai-belanja'
     | '/_authenticated/app/profil'
     | '/_authenticated/app/selesai'
@@ -349,6 +349,8 @@ export interface FileRouteTypes {
     | '/_authenticated/app/'
     | '/_authenticated/admin/users/$id'
     | '/_authenticated/app/history/$id'
+    | '/_authenticated/admin/users/'
+    | '/_authenticated/app/history/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -444,13 +446,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppMulaiBelanjaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/app/history': {
-      id: '/_authenticated/app/history'
-      path: '/history'
-      fullPath: '/app/history'
-      preLoaderRoute: typeof AuthenticatedAppHistoryRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
     '/_authenticated/app/generate': {
       id: '/_authenticated/app/generate'
       path: '/generate'
@@ -485,13 +480,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/belanja'
       preLoaderRoute: typeof AuthenticatedAppBelanjaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/_authenticated/admin/users': {
-      id: '/_authenticated/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/toko': {
       id: '/_authenticated/admin/toko'
@@ -535,36 +523,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/app/history/': {
+      id: '/_authenticated/app/history/'
+      path: '/history'
+      fullPath: '/app/history/'
+      preLoaderRoute: typeof AuthenticatedAppHistoryIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/admin/users/': {
+      id: '/_authenticated/admin/users/'
+      path: '/users'
+      fullPath: '/admin/users/'
+      preLoaderRoute: typeof AuthenticatedAdminUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/app/history/$id': {
       id: '/_authenticated/app/history/$id'
-      path: '/$id'
+      path: '/history/$id'
       fullPath: '/app/history/$id'
       preLoaderRoute: typeof AuthenticatedAppHistoryIdRouteImport
-      parentRoute: typeof AuthenticatedAppHistoryRoute
+      parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/admin/users/$id': {
       id: '/_authenticated/admin/users/$id'
-      path: '/$id'
+      path: '/users/$id'
       fullPath: '/admin/users/$id'
       preLoaderRoute: typeof AuthenticatedAdminUsersIdRouteImport
-      parentRoute: typeof AuthenticatedAdminUsersRoute
+      parentRoute: typeof AuthenticatedAdminRoute
     }
   }
 }
-
-interface AuthenticatedAdminUsersRouteChildren {
-  AuthenticatedAdminUsersIdRoute: typeof AuthenticatedAdminUsersIdRoute
-}
-
-const AuthenticatedAdminUsersRouteChildren: AuthenticatedAdminUsersRouteChildren =
-  {
-    AuthenticatedAdminUsersIdRoute: AuthenticatedAdminUsersIdRoute,
-  }
-
-const AuthenticatedAdminUsersRouteWithChildren =
-  AuthenticatedAdminUsersRoute._addFileChildren(
-    AuthenticatedAdminUsersRouteChildren,
-  )
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
@@ -573,8 +561,9 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminKategoriBarangRoute: typeof AuthenticatedAdminKategoriBarangRoute
   AuthenticatedAdminKategoriUserRoute: typeof AuthenticatedAdminKategoriUserRoute
   AuthenticatedAdminTokoRoute: typeof AuthenticatedAdminTokoRoute
-  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRouteWithChildren
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminUsersIdRoute: typeof AuthenticatedAdminUsersIdRoute
+  AuthenticatedAdminUsersIndexRoute: typeof AuthenticatedAdminUsersIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
@@ -584,26 +573,13 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminKategoriBarangRoute: AuthenticatedAdminKategoriBarangRoute,
   AuthenticatedAdminKategoriUserRoute: AuthenticatedAdminKategoriUserRoute,
   AuthenticatedAdminTokoRoute: AuthenticatedAdminTokoRoute,
-  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRouteWithChildren,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminUsersIdRoute: AuthenticatedAdminUsersIdRoute,
+  AuthenticatedAdminUsersIndexRoute: AuthenticatedAdminUsersIndexRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
-
-interface AuthenticatedAppHistoryRouteChildren {
-  AuthenticatedAppHistoryIdRoute: typeof AuthenticatedAppHistoryIdRoute
-}
-
-const AuthenticatedAppHistoryRouteChildren: AuthenticatedAppHistoryRouteChildren =
-  {
-    AuthenticatedAppHistoryIdRoute: AuthenticatedAppHistoryIdRoute,
-  }
-
-const AuthenticatedAppHistoryRouteWithChildren =
-  AuthenticatedAppHistoryRoute._addFileChildren(
-    AuthenticatedAppHistoryRouteChildren,
-  )
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBelanjaRoute: typeof AuthenticatedAppBelanjaRoute
@@ -611,11 +587,12 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
   AuthenticatedAppFavoritRoute: typeof AuthenticatedAppFavoritRoute
   AuthenticatedAppGenerateRoute: typeof AuthenticatedAppGenerateRoute
-  AuthenticatedAppHistoryRoute: typeof AuthenticatedAppHistoryRouteWithChildren
   AuthenticatedAppMulaiBelanjaRoute: typeof AuthenticatedAppMulaiBelanjaRoute
   AuthenticatedAppProfilRoute: typeof AuthenticatedAppProfilRoute
   AuthenticatedAppSelesaiRoute: typeof AuthenticatedAppSelesaiRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppHistoryIdRoute: typeof AuthenticatedAppHistoryIdRoute
+  AuthenticatedAppHistoryIndexRoute: typeof AuthenticatedAppHistoryIndexRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
@@ -624,11 +601,12 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
   AuthenticatedAppFavoritRoute: AuthenticatedAppFavoritRoute,
   AuthenticatedAppGenerateRoute: AuthenticatedAppGenerateRoute,
-  AuthenticatedAppHistoryRoute: AuthenticatedAppHistoryRouteWithChildren,
   AuthenticatedAppMulaiBelanjaRoute: AuthenticatedAppMulaiBelanjaRoute,
   AuthenticatedAppProfilRoute: AuthenticatedAppProfilRoute,
   AuthenticatedAppSelesaiRoute: AuthenticatedAppSelesaiRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppHistoryIdRoute: AuthenticatedAppHistoryIdRoute,
+  AuthenticatedAppHistoryIndexRoute: AuthenticatedAppHistoryIndexRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =

@@ -8,7 +8,7 @@ import { EmptyState, Skeleton } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
 import { History, ChevronRight } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/app/history")({
+export const Route = createFileRoute("/_authenticated/app/history/")({
   head: () => ({ meta: [{ title: "History Belanja — BelanjaKu" }] }),
   component: HistoryPage,
 });
