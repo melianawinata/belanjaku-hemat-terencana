@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, ShoppingBasket } from "lucide-react";
+import { Loader2, ShoppingBasket, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -89,6 +89,7 @@ function LoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
@@ -117,8 +118,15 @@ function LoginForm() {
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="login-pw">Password</Label>
-        <Input id="login-pw" type="password" required value={password}
-          onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+        <div className="relative">
+          <Input id="login-pw" type={showPassword ? "text" : "password"} required value={password}
+            onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pr-10" />
+          <button type="button" onClick={() => setShowPassword((v) => !v)}
+            className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+            aria-label={showPassword ? "Sembunyikan password" : "Lihat password"}>
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
       {err && <p className="text-sm text-destructive">{err}</p>}
       <Button type="submit" className="w-full" disabled={loading}>
