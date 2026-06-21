@@ -6,7 +6,7 @@ import { useAuth, logActivity } from "@/lib/useAuth";
 import { bulanIni, formatRupiah, namaBulan } from "@/lib/format";
 import { getOrCreateBelanja, getEstimasiHarga, totalEstimasi, totalRealisasi, BelanjaItemRow } from "@/lib/belanja";
 import { PageHeader } from "@/components/app-shell";
-import { EmptyState, Skeleton } from "@/components/belanja-ui";
+import { EmptyState, Skeleton, DraftInput } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -145,10 +145,10 @@ function BelanjaPage() {
                         </p>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Input type="number" min={0.1} step={0.1} value={i.jumlah}
-                          onChange={(e) => updateItem(i.id, { jumlah: Number(e.target.value) })}
-                          className="h-8 w-16 text-center" />
-                        <Input value={i.satuan} onChange={(e) => updateItem(i.id, { satuan: e.target.value })} className="h-8 w-16 text-center" />
+                        <DraftInput type="number" value={String(i.jumlah)} inputClassName="h-8 w-16 text-center"
+                          onCommit={(raw) => { const n = Number(raw); if (raw.trim() !== "" && !Number.isNaN(n) && n > 0) updateItem(i.id, { jumlah: n }); }} />
+                        <DraftInput value={i.satuan} inputClassName="h-8 w-16 text-center"
+                          onCommit={(raw) => { const v = raw.trim(); if (v) updateItem(i.id, { satuan: v }); }} />
                       </div>
                       <Button variant="ghost" size="icon" className="text-destructive" onClick={() => deleteItem(i.id)}>
                         <Trash2 className="h-4 w-4" />

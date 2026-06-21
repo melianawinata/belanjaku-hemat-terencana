@@ -1,5 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { formatRupiah } from "@/lib/format";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Check, X } from "lucide-react";
 
 export function StatCard({ label, value, hint, tone = "default", icon }: {
   label: string; value: ReactNode; hint?: ReactNode;
@@ -55,4 +58,64 @@ export function EmptyState({ icon, title, desc, action }: { icon: ReactNode; tit
 
 export function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`animate-pulse rounded-xl bg-muted ${className}`} />;
+}
+
+/**
+ * Text/number input with local draft state so typing is instant (no per-keystroke
+ * network write). Commits on blur / Enter / ✓; reverts on Esc / ✕. Auto-selects
+ * on focus so the user can overwrite immediately.
+ */
+export function DraftInput({ value, onCommit, type = "text", placeholder, inputClassName }: {
+  value: string; onCommit: (raw: string) => void; type?: "text" | "number"; placeholder?: string; inputClassName?: string;
+}) {
+  const [draft, setDraft] = useState(value);
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const guard = useRef(false); // once true, block commit until next focus
+
+  // Keep draft in sync with server value while not actively editing.
+  useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
+
+  const commit = () => {
+    if (guard.current) return;
+    guard.current = true;
+    if (draft !== value) onCommit(draft);
+    setEditing(false);
+    inputRef.current?.blur();
+  };
+  const cancel = () => {
+    guard.current = true;
+    setDraft(value);
+    setEditing(false);
+    inputRef.current?.blur();
+  };
+
+  return (
+    <div className="flex items-center gap-1">
+      <Input
+        ref={inputRef}
+        type={type}
+        inputMode={type === "number" ? "decimal" : undefined}
+        value={draft}
+        placeholder={placeholder}
+        onFocus={(e) => { guard.current = false; setEditing(true); e.target.select(); }}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => { if (e.key === "Enter") commit(); else if (e.key === "Escape") cancel(); }}
+        className={inputClassName ?? "h-9"}
+      />
+      {editing && (
+        <>
+          <Button type="button" size="icon" variant="ghost" aria-label="Simpan"
+            className="h-9 w-9 shrink-0 text-success" onMouseDown={(e) => e.preventDefault()} onClick={commit}>
+            <Check className="h-4 w-4" />
+          </Button>
+          <Button type="button" size="icon" variant="ghost" aria-label="Batal"
+            className="h-9 w-9 shrink-0 text-muted-foreground" onMouseDown={(e) => e.preventDefault()} onClick={cancel}>
+            <X className="h-4 w-4" />
+          </Button>
+        </>
+      )}
+    </div>
+  );
 }
