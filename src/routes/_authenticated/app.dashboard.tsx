@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { bulanIni, formatRupiah, namaBulan } from "@/lib/format";
 import { totalEstimasi, totalRealisasi, BelanjaItemRow } from "@/lib/belanja";
-import { getPengeluaranLain, totalPengeluaran } from "@/lib/pengeluaran";
+import { getPengeluaranLain, getPengeluaranRutin, totalPengeluaran } from "@/lib/pengeluaran";
 import { PageHeader } from "@/components/app-shell";
 import { StatCard, BudgetBar, EmptyState, Skeleton } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ function Dashboard() {
       }
 
       const pengeluaranLain = await getPengeluaranLain(userId!, bulan, tahun);
+      const rutin = await getPengeluaranRutin(userId!);
 
       const { data: kategoriBarang } = await supabase.from("kategori_barang").select("id, nama");
       const { data: allBelanja } = await supabase
@@ -55,7 +56,7 @@ function Dashboard() {
         monthAgg.push({ label: namaBulan(b.bulan).slice(0, 3), realisasi: real, budget: Number(b.budget) });
       }
 
-      return { belanja, items, pengeluaranLain, kategoriBarang: kategoriBarang ?? [], histori: histori ?? [], monthAgg: monthAgg.slice(-6) };
+      return { belanja, items, pengeluaranLain, rutin, kategoriBarang: kategoriBarang ?? [], histori: histori ?? [], monthAgg: monthAgg.slice(-6) };
     },
   });
 
@@ -75,9 +76,19 @@ function Dashboard() {
   const items = data?.items ?? [];
   const estimasi = totalEstimasi(items);
   const realisasi = totalRealisasi(items);
-  const pemakaian = realisasi > 0 ? realisasi : estimasi;
-  const selisih = budget - pemakaian;
   const pengeluaranLainTotal = totalPengeluaran(data?.pengeluaranLain ?? []);
+  // Pengeluaran rutin aktif yang BELUM diterapkan bulan ini = perkiraan yang masih akan terjadi.
+  const rutinApplied = new Set((data?.pengeluaranLain ?? []).map((p) => p.rutin_id).filter(Boolean));
+  const estimasiRutin = (data?.rutin ?? [])
+    .filter((r) => r.aktif && !rutinApplied.has(r.id))
+    .reduce((s, r) => s + Number(r.nominal), 0);
+  const estimasiTotal = estimasi + estimasiRutin;
+  const pemakaian = realisasi > 0 ? realisasi : estimasi;
+  // Ringkasan atas menggabungkan belanja + pengeluaran lain (rincian terpisah ada di bar di bawah).
+  const totalBudget = budget + budgetLain;
+  const realisasiTotal = realisasi + pengeluaranLainTotal;
+  const totalPemakaian = pemakaian + pengeluaranLainTotal;
+  const selisih = totalBudget - totalPemakaian;
   const dibeli = items.filter((i) => i.sudah_dibeli).length;
   const belum = items.length - dibeli;
 
@@ -114,7 +125,7 @@ function Dashboard() {
   }
   const sering = [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
 
-  const selisihTone = selisih < 0 ? "danger" : budget > 0 && pemakaian / budget >= 0.8 ? "warning" : "success";
+  const selisihTone = selisih < 0 ? "danger" : totalBudget > 0 && totalPemakaian / totalBudget >= 0.8 ? "warning" : "success";
 
   return (
     <>
@@ -133,9 +144,12 @@ function Dashboard() {
         <div className="space-y-6">
           {/* Ringkasan */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard label="Budget Bulan Ini" value={formatRupiah(budget)} icon={<Wallet className="h-4 w-4 text-muted-foreground" />} />
-            <StatCard label="Estimasi Belanja" value={formatRupiah(estimasi)} tone="info" icon={<Calculator className="h-4 w-4 text-info" />} />
-            <StatCard label="Realisasi" value={formatRupiah(realisasi)} tone="success" icon={<Receipt className="h-4 w-4 text-success" />} />
+            <StatCard label="Budget Bulan Ini" value={formatRupiah(totalBudget)}
+              hint={`Belanja ${formatRupiah(budget)} · Lain ${formatRupiah(budgetLain)}`} icon={<Wallet className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard label="Estimasi Belanja" value={formatRupiah(estimasiTotal)} tone="info"
+              hint={`Belanja ${formatRupiah(estimasi)} · Rutin ${formatRupiah(estimasiRutin)}`} icon={<Calculator className="h-4 w-4 text-info" />} />
+            <StatCard label="Realisasi" value={formatRupiah(realisasiTotal)} tone="success"
+              hint={`Belanja ${formatRupiah(realisasi)} · Lain ${formatRupiah(pengeluaranLainTotal)}`} icon={<Receipt className="h-4 w-4 text-success" />} />
             <StatCard label="Selisih Budget" value={formatRupiah(selisih)} tone={selisihTone}
               hint={selisih >= 0 ? "Masih ada sisa, mantap!" : "Melebihi budget"} icon={<PiggyBank className="h-4 w-4" />} />
           </div>
