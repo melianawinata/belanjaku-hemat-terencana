@@ -69,7 +69,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
       <div className="lg:pl-60">
         <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/80 px-4 py-3 backdrop-blur sm:px-6">
-          <p className="font-mono text-[11px] uppercase tracking-wider text-info">Panel Admin</p>
+          <div className="flex items-center gap-2">
+            <Link to="/app/dashboard" aria-label="Kembali ke Mode Pengguna"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground lg:hidden">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-info">Panel Admin</p>
+          </div>
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-info/15 font-mono text-sm font-semibold text-info">{(profile?.nama || "A").charAt(0).toUpperCase()}</span>
         </header>
         <main className="px-4 pb-10 pt-5 sm:px-6">{children}</main>
