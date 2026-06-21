@@ -76,6 +76,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p className="text-sm font-semibold">Halo, {profile?.nama?.split(" ")[0] || "Sahabat"} 👋</p>
           </div>
           <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Link to="/admin/dashboard" aria-label="Ke Area Admin"
+                className="flex h-9 w-9 items-center justify-center rounded-xl text-info hover:bg-info/10 lg:hidden">
+                <Shield className="h-5 w-5" />
+              </Link>
+            )}
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 font-mono text-sm font-semibold text-primary">
               {(profile?.nama || "?").charAt(0).toUpperCase()}
             </span>
