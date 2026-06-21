@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, logActivity } from "@/lib/useAuth";
-import { formatRupiah, labelBulanTahun } from "@/lib/format";
+import { formatRupiah, formatTanggal, labelBulanTahun } from "@/lib/format";
 import { BelanjaItemRow } from "@/lib/belanja";
+import { getKategoriPengeluaran, getPengeluaranLain, totalPengeluaran } from "@/lib/pengeluaran";
 import { PageHeader } from "@/components/app-shell";
 import { StatCard, Skeleton } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,9 @@ function HistoryDetail() {
       const { data: belanja } = await supabase.from("belanja_bulanan").select("*").eq("id", id).maybeSingle();
       const { data: items } = await supabase.from("belanja_item").select("*").eq("belanja_id", id).order("created_at");
       const { data: toko } = await supabase.from("toko").select("id, nama");
-      return { belanja, items: (items ?? []) as BelanjaItemRow[], toko: toko ?? [] };
+      const pengeluaranLain = belanja ? await getPengeluaranLain(belanja.user_id, belanja.bulan, belanja.tahun) : [];
+      const kategori = pengeluaranLain.length > 0 ? await getKategoriPengeluaran() : [];
+      return { belanja, items: (items ?? []) as BelanjaItemRow[], toko: toko ?? [], pengeluaranLain, kategori };
     },
   });
 
@@ -43,6 +46,9 @@ function HistoryDetail() {
   const tokoMap = new Map((data?.toko ?? []).map((t) => [t.id, t.nama]));
   const total = items.filter((i) => i.sudah_dibeli && i.harga_aktual != null).reduce((s, i) => s + Number(i.harga_aktual), 0);
   const dibeli = items.filter((i) => i.sudah_dibeli).length;
+  const pengeluaranLain = data?.pengeluaranLain ?? [];
+  const totalLain = totalPengeluaran(pengeluaranLain);
+  const katPengeluaran = new Map((data?.kategori ?? []).map((k) => [k.id, k.nama]));
   // Tampilkan item yang sudah dibeli di atas, sisanya mengikuti urutan asli (created_at).
   const sortedItems = [...items].sort((a, b) => Number(b.sudah_dibeli) - Number(a.sudah_dibeli));
 
@@ -53,7 +59,7 @@ function HistoryDetail() {
       } />
       <div className="space-y-5">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          <StatCard label="Total Pengeluaran" value={formatRupiah(total)} tone="success" />
+          <StatCard label="Total Belanja" value={formatRupiah(total)} tone="success" />
           <StatCard label="Budget" value={formatRupiah(Number(belanja?.budget ?? 0))} />
           <StatCard label="Item Dibeli" value={`${dibeli}/${items.length}`} />
         </div>
@@ -85,6 +91,30 @@ function HistoryDetail() {
             ))}
           </ul>
         </div>
+
+        {pengeluaranLain.length > 0 && (
+          <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+            <div className="flex items-center justify-between border-b bg-muted/40 px-4 py-2.5">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Pengeluaran Lain</span>
+              <span className="font-mono text-xs font-semibold text-muted-foreground">{formatRupiah(totalLain)}</span>
+            </div>
+            <ul className="divide-y">
+              {pengeluaranLain.map((p) => (
+                <li key={p.id} className="flex items-center gap-3 px-4 py-3 text-sm">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">{katPengeluaran.get(p.kategori_pengeluaran_id ?? "") ?? "Tanpa kategori"}</span>
+                      <span className="font-mono text-xs text-muted-foreground">{formatTanggal(p.tanggal)}</span>
+                      {p.metode_bayar && <span className="rounded bg-info/10 px-1.5 py-0.5 text-[10px] font-medium text-info">{p.metode_bayar}</span>}
+                    </div>
+                    {p.deskripsi && <p className="mt-0.5 truncate">{p.deskripsi}</p>}
+                  </div>
+                  <span className="shrink-0 font-mono font-semibold">{formatRupiah(p.nominal)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       <EditDialog item={editing} toko={data?.toko ?? []} userId={userId!} onClose={() => setEditing(null)} onSaved={refetch} />

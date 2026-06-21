@@ -5,13 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { Button } from "@/components/ui/button";
 import {
-  LayoutDashboard, Users, Tags, Package, Store, ListChecks, Boxes, ShoppingBasket, LogOut, ArrowLeft, ShieldAlert, Loader2,
+  LayoutDashboard, Users, Tags, Package, Store, ListChecks, Boxes, ShoppingBasket, LogOut, ArrowLeft, ShieldAlert, Loader2, Receipt,
 } from "lucide-react";
 
 const NAV = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/kategori-user", label: "Kategori User", icon: Tags },
   { to: "/admin/kategori-barang", label: "Kategori Barang", icon: Boxes },
+  { to: "/admin/kategori-pengeluaran", label: "Kategori Pengeluaran", icon: Receipt },
   { to: "/admin/item", label: "Master Item", icon: Package },
   { to: "/admin/toko", label: "Master Toko", icon: Store },
   { to: "/admin/default-item", label: "Default Item", icon: ListChecks },

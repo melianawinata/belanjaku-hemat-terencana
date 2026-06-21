@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
+import { getPengeluaranLain, totalPengeluaran } from "@/lib/pengeluaran";
 import { formatRupiah, labelBulanTahun } from "@/lib/format";
 import { PageHeader } from "@/components/app-shell";
 import { EmptyState, Skeleton } from "@/components/belanja-ui";
@@ -31,7 +32,8 @@ function HistoryPage() {
       for (const b of belanja ?? []) {
         const { data: items } = await supabase.from("belanja_item").select("harga_aktual, sudah_dibeli").eq("belanja_id", b.id);
         const total = (items ?? []).filter((x) => x.sudah_dibeli && x.harga_aktual != null).reduce((s, x) => s + Number(x.harga_aktual), 0);
-        result.push({ ...b, total, jumlahItem: (items ?? []).length });
+        const pengeluaranLain = totalPengeluaran(await getPengeluaranLain(userId!, b.bulan, b.tahun));
+        result.push({ ...b, total, pengeluaranLain, jumlahItem: (items ?? []).length });
       }
       return result;
     },
@@ -61,10 +63,13 @@ function HistoryPage() {
                     <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] uppercase ${s.c}`}>{s.t}</span>
                   </div>
                   <p className="font-mono text-xs text-muted-foreground">{b.jumlahItem} item · budget {formatRupiah(b.budget)}</p>
+                  {b.pengeluaranLain > 0 && (
+                    <p className="font-mono text-xs text-muted-foreground">+ pengeluaran lain {formatRupiah(b.pengeluaranLain)}</p>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="font-mono font-semibold">{formatRupiah(b.total)}</p>
-                  <p className="text-xs text-muted-foreground">pengeluaran</p>
+                  <p className="text-xs text-muted-foreground">belanja</p>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </Link>

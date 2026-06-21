@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { bulanIni, formatRupiah, namaBulan } from "@/lib/format";
 import { totalEstimasi, totalRealisasi, BelanjaItemRow } from "@/lib/belanja";
+import { getPengeluaranLain, totalPengeluaran } from "@/lib/pengeluaran";
 import { PageHeader } from "@/components/app-shell";
 import { StatCard, BudgetBar, EmptyState, Skeleton } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,8 @@ function Dashboard() {
         items = (it ?? []) as BelanjaItemRow[];
       }
 
+      const pengeluaranLain = await getPengeluaranLain(userId!, bulan, tahun);
+
       const { data: kategoriBarang } = await supabase.from("kategori_barang").select("id, nama");
       const { data: allBelanja } = await supabase
         .from("belanja_bulanan").select("*").eq("user_id", userId!).order("tahun").order("bulan");
@@ -52,7 +55,7 @@ function Dashboard() {
         monthAgg.push({ label: namaBulan(b.bulan).slice(0, 3), realisasi: real, budget: Number(b.budget) });
       }
 
-      return { belanja, items, kategoriBarang: kategoriBarang ?? [], histori: histori ?? [], monthAgg: monthAgg.slice(-6) };
+      return { belanja, items, pengeluaranLain, kategoriBarang: kategoriBarang ?? [], histori: histori ?? [], monthAgg: monthAgg.slice(-6) };
     },
   });
 
@@ -68,11 +71,13 @@ function Dashboard() {
   }
 
   const budget = Number(data?.belanja?.budget ?? 0);
+  const budgetLain = Number(data?.belanja?.budget_lain ?? 0);
   const items = data?.items ?? [];
   const estimasi = totalEstimasi(items);
   const realisasi = totalRealisasi(items);
   const pemakaian = realisasi > 0 ? realisasi : estimasi;
   const selisih = budget - pemakaian;
+  const pengeluaranLainTotal = totalPengeluaran(data?.pengeluaranLain ?? []);
   const dibeli = items.filter((i) => i.sudah_dibeli).length;
   const belum = items.length - dibeli;
 
@@ -120,7 +125,7 @@ function Dashboard() {
         </div>
       } />
 
-      {items.length === 0 && budget === 0 ? (
+      {items.length === 0 && budget === 0 && budgetLain === 0 && pengeluaranLainTotal === 0 ? (
         <EmptyState icon={<ShoppingCart className="h-7 w-7" />} title="Belum ada aktivitas bulan ini"
           desc="Yuk atur budget dan susun daftar belanja bulananmu agar pengeluaran lebih terkontrol."
           action={<Link to="/app/belanja"><Button>Susun Daftar Belanja</Button></Link>} />
@@ -135,9 +140,21 @@ function Dashboard() {
               hint={selisih >= 0 ? "Masih ada sisa, mantap!" : "Melebihi budget"} icon={<PiggyBank className="h-4 w-4" />} />
           </div>
 
-          <div className="rounded-2xl border bg-card p-5 shadow-sm">
-            <p className="mb-3 text-sm font-semibold">Pemakaian vs Budget</p>
-            <BudgetBar pemakaian={pemakaian} budget={budget} />
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl border bg-card p-5 shadow-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-sm font-semibold">Belanja vs Budget</p>
+                <span className="font-mono text-xs text-muted-foreground">{formatRupiah(pemakaian)} / {formatRupiah(budget)}</span>
+              </div>
+              <BudgetBar pemakaian={pemakaian} budget={budget} />
+            </div>
+            <div className="rounded-2xl border bg-card p-5 shadow-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-sm font-semibold">Pengeluaran Lain vs Budget</p>
+                <span className="font-mono text-xs text-muted-foreground">{formatRupiah(pengeluaranLainTotal)} / {formatRupiah(budgetLain)}</span>
+              </div>
+              <BudgetBar pemakaian={pengeluaranLainTotal} budget={budgetLain} />
+            </div>
           </div>
 
           {/* Statistik */}

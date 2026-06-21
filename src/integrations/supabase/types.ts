@@ -41,6 +41,7 @@ export type Database = {
       belanja_bulanan: {
         Row: {
           budget: number
+          budget_lain: number
           bulan: number
           created_at: string
           id: string
@@ -51,6 +52,7 @@ export type Database = {
         }
         Insert: {
           budget?: number
+          budget_lain?: number
           bulan: number
           created_at?: string
           id?: string
@@ -61,6 +63,7 @@ export type Database = {
         }
         Update: {
           budget?: number
+          budget_lain?: number
           bulan?: number
           created_at?: string
           id?: string
@@ -322,6 +325,122 @@ export type Database = {
           nama?: string
         }
         Relationships: []
+      }
+      kategori_pengeluaran: {
+        Row: {
+          created_at: string
+          id: string
+          nama: string
+          urutan: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nama: string
+          urutan?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nama?: string
+          urutan?: number
+        }
+        Relationships: []
+      }
+      pengeluaran_lain: {
+        Row: {
+          created_at: string
+          deskripsi: string
+          id: string
+          kategori_pengeluaran_id: string | null
+          metode_bayar: string | null
+          nominal: number
+          rutin_id: string | null
+          tanggal: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deskripsi?: string
+          id?: string
+          kategori_pengeluaran_id?: string | null
+          metode_bayar?: string | null
+          nominal?: number
+          rutin_id?: string | null
+          tanggal?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deskripsi?: string
+          id?: string
+          kategori_pengeluaran_id?: string | null
+          metode_bayar?: string | null
+          nominal?: number
+          rutin_id?: string | null
+          tanggal?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pengeluaran_lain_kategori_pengeluaran_id_fkey"
+            columns: ["kategori_pengeluaran_id"]
+            isOneToOne: false
+            referencedRelation: "kategori_pengeluaran"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pengeluaran_lain_rutin_id_fkey"
+            columns: ["rutin_id"]
+            isOneToOne: false
+            referencedRelation: "pengeluaran_rutin"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pengeluaran_rutin: {
+        Row: {
+          aktif: boolean
+          created_at: string
+          deskripsi: string
+          id: string
+          kategori_pengeluaran_id: string | null
+          metode_bayar: string | null
+          nominal: number
+          tanggal_hari: number
+          user_id: string
+        }
+        Insert: {
+          aktif?: boolean
+          created_at?: string
+          deskripsi?: string
+          id?: string
+          kategori_pengeluaran_id?: string | null
+          metode_bayar?: string | null
+          nominal?: number
+          tanggal_hari?: number
+          user_id: string
+        }
+        Update: {
+          aktif?: boolean
+          created_at?: string
+          deskripsi?: string
+          id?: string
+          kategori_pengeluaran_id?: string | null
+          metode_bayar?: string | null
+          nominal?: number
+          tanggal_hari?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pengeluaran_rutin_kategori_pengeluaran_id_fkey"
+            columns: ["kategori_pengeluaran_id"]
+            isOneToOne: false
+            referencedRelation: "kategori_pengeluaran"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       kategori_user: {
         Row: {

@@ -22,6 +22,7 @@ export interface BelanjaBulananRow {
   bulan: number;
   tahun: number;
   budget: number;
+  budget_lain: number;
   status: string;
   created_at: string;
   selesai_at: string | null;

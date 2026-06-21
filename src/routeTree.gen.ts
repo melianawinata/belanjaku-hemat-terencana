@@ -28,6 +28,7 @@ import { Route as AuthenticatedAppBudgetRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
 import { Route as AuthenticatedAdminTokoRouteImport } from './routes/_authenticated/admin.toko'
 import { Route as AuthenticatedAdminKategoriUserRouteImport } from './routes/_authenticated/admin.kategori-user'
+import { Route as AuthenticatedAdminKategoriPengeluaranRouteImport } from './routes/_authenticated/admin.kategori-pengeluaran'
 import { Route as AuthenticatedAdminKategoriBarangRouteImport } from './routes/_authenticated/admin.kategori-barang'
 import { Route as AuthenticatedAdminItemRouteImport } from './routes/_authenticated/admin.item'
 import { Route as AuthenticatedAdminDefaultItemRouteImport } from './routes/_authenticated/admin.default-item'
@@ -135,6 +136,12 @@ const AuthenticatedAdminKategoriUserRoute =
     path: '/kategori-user',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminKategoriPengeluaranRoute =
+  AuthenticatedAdminKategoriPengeluaranRouteImport.update({
+    id: '/kategori-pengeluaran',
+    path: '/kategori-pengeluaran',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminKategoriBarangRoute =
   AuthenticatedAdminKategoriBarangRouteImport.update({
     id: '/kategori-barang',
@@ -194,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/admin/item': typeof AuthenticatedAdminItemRoute
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
+  '/admin/kategori-pengeluaran': typeof AuthenticatedAdminKategoriPengeluaranRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
@@ -220,6 +228,7 @@ export interface FileRoutesByTo {
   '/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/admin/item': typeof AuthenticatedAdminItemRoute
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
+  '/admin/kategori-pengeluaran': typeof AuthenticatedAdminKategoriPengeluaranRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
@@ -250,6 +259,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/_authenticated/admin/item': typeof AuthenticatedAdminItemRoute
   '/_authenticated/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
+  '/_authenticated/admin/kategori-pengeluaran': typeof AuthenticatedAdminKategoriPengeluaranRoute
   '/_authenticated/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
   '/_authenticated/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/admin/default-item'
     | '/admin/item'
     | '/admin/kategori-barang'
+    | '/admin/kategori-pengeluaran'
     | '/admin/kategori-user'
     | '/admin/toko'
     | '/app/belanja'
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/admin/default-item'
     | '/admin/item'
     | '/admin/kategori-barang'
+    | '/admin/kategori-pengeluaran'
     | '/admin/kategori-user'
     | '/admin/toko'
     | '/app/belanja'
@@ -335,6 +347,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/default-item'
     | '/_authenticated/admin/item'
     | '/_authenticated/admin/kategori-barang'
+    | '/_authenticated/admin/kategori-pengeluaran'
     | '/_authenticated/admin/kategori-user'
     | '/_authenticated/admin/toko'
     | '/_authenticated/app/belanja'
@@ -495,6 +508,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminKategoriUserRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/kategori-pengeluaran': {
+      id: '/_authenticated/admin/kategori-pengeluaran'
+      path: '/kategori-pengeluaran'
+      fullPath: '/admin/kategori-pengeluaran'
+      preLoaderRoute: typeof AuthenticatedAdminKategoriPengeluaranRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/kategori-barang': {
       id: '/_authenticated/admin/kategori-barang'
       path: '/kategori-barang'
@@ -559,6 +579,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDefaultItemRoute: typeof AuthenticatedAdminDefaultItemRoute
   AuthenticatedAdminItemRoute: typeof AuthenticatedAdminItemRoute
   AuthenticatedAdminKategoriBarangRoute: typeof AuthenticatedAdminKategoriBarangRoute
+  AuthenticatedAdminKategoriPengeluaranRoute: typeof AuthenticatedAdminKategoriPengeluaranRoute
   AuthenticatedAdminKategoriUserRoute: typeof AuthenticatedAdminKategoriUserRoute
   AuthenticatedAdminTokoRoute: typeof AuthenticatedAdminTokoRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -571,6 +592,8 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDefaultItemRoute: AuthenticatedAdminDefaultItemRoute,
   AuthenticatedAdminItemRoute: AuthenticatedAdminItemRoute,
   AuthenticatedAdminKategoriBarangRoute: AuthenticatedAdminKategoriBarangRoute,
+  AuthenticatedAdminKategoriPengeluaranRoute:
+    AuthenticatedAdminKategoriPengeluaranRoute,
   AuthenticatedAdminKategoriUserRoute: AuthenticatedAdminKategoriUserRoute,
   AuthenticatedAdminTokoRoute: AuthenticatedAdminTokoRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
