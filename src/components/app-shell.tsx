@@ -5,18 +5,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { bulanIni, labelBulanTahun } from "@/lib/format";
 import {
-  LayoutDashboard, ShoppingCart, History, Wallet, Heart, User,
+  LayoutDashboard, ShoppingCart, History, Wallet, Heart, User, Receipt,
   ShoppingBasket, LogOut, Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// `short` dipakai untuk bottom-nav mobile yang sempit; sidebar desktop pakai `label`.
 const NAV = [
-  { to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/app/belanja", label: "Belanja", icon: ShoppingCart },
-  { to: "/app/history", label: "History", icon: History },
-  { to: "/app/budget", label: "Budget", icon: Wallet },
-  { to: "/app/favorit", label: "Favorit", icon: Heart },
-  { to: "/app/profil", label: "Profil", icon: User },
+  { to: "/app/dashboard", label: "Dashboard", short: "Home", icon: LayoutDashboard },
+  { to: "/app/belanja", label: "Belanja Bulanan", short: "Belanja", icon: ShoppingCart },
+  { to: "/app/pengeluaran", label: "Pengeluaran Lain", short: "Lainnya", icon: Receipt },
+  { to: "/app/history", label: "History", short: "History", icon: History },
+  { to: "/app/budget", label: "Budget", short: "Budget", icon: Wallet },
+  { to: "/app/favorit", label: "Favorit", short: "Favorit", icon: Heart },
+  { to: "/app/profil", label: "Profil", short: "Profil", icon: User },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -91,13 +93,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t bg-background lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-7 border-t bg-background lg:hidden">
         {NAV.map((n) => (
           <Link key={n.to} to={n.to}
-            className={`flex flex-col items-center gap-0.5 py-2 text-[10px] ${
+            className={`flex flex-col items-center gap-0.5 py-2 text-[9px] ${
               isActive(n.to) ? "text-primary" : "text-muted-foreground"
             }`}>
-            <n.icon className="h-5 w-5" /> {n.label}
+            <n.icon className="h-5 w-5" /> {n.short}
           </Link>
         ))}
       </nav>
