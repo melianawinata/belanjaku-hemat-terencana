@@ -12,6 +12,7 @@ export interface BelanjaItemRow {
   estimasi_harga: number;
   estimasi_sumber: "histori" | "ai" | "manual" | null;
   harga_aktual: number | null;
+  harga_sumber: "scan" | "manual" | null;
   toko_id: string | null;
   sudah_dibeli: boolean;
   dibeli_at: string | null;

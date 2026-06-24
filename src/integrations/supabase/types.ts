@@ -76,6 +76,7 @@ export type Database = {
           estimasi_harga: number;
           estimasi_sumber: string | null;
           harga_aktual: number | null;
+          harga_sumber: string | null;
           id: string;
           item_id: string | null;
           jumlah: number;
@@ -94,6 +95,7 @@ export type Database = {
           estimasi_harga?: number;
           estimasi_sumber?: string | null;
           harga_aktual?: number | null;
+          harga_sumber?: string | null;
           id?: string;
           item_id?: string | null;
           jumlah?: number;
@@ -112,6 +114,7 @@ export type Database = {
           estimasi_harga?: number;
           estimasi_sumber?: string | null;
           harga_aktual?: number | null;
+          harga_sumber?: string | null;
           id?: string;
           item_id?: string | null;
           jumlah?: number;

@@ -19,6 +19,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAppSelesaiRouteImport } from './routes/_authenticated/app.selesai'
+import { Route as AuthenticatedAppScanStrukRouteImport } from './routes/_authenticated/app.scan-struk'
 import { Route as AuthenticatedAppProfilRouteImport } from './routes/_authenticated/app.profil'
 import { Route as AuthenticatedAppPengeluaranRouteImport } from './routes/_authenticated/app.pengeluaran'
 import { Route as AuthenticatedAppMulaiBelanjaRouteImport } from './routes/_authenticated/app.mulai-belanja'
@@ -88,6 +89,12 @@ const AuthenticatedAppSelesaiRoute = AuthenticatedAppSelesaiRouteImport.update({
   path: '/selesai',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppScanStrukRoute =
+  AuthenticatedAppScanStrukRouteImport.update({
+    id: '/scan-struk',
+    path: '/scan-struk',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppProfilRoute = AuthenticatedAppProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/pengeluaran': typeof AuthenticatedAppPengeluaranRoute
   '/app/profil': typeof AuthenticatedAppProfilRoute
+  '/app/scan-struk': typeof AuthenticatedAppScanStrukRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/app/': typeof AuthenticatedAppIndexRoute
@@ -247,6 +255,7 @@ export interface FileRoutesByTo {
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/pengeluaran': typeof AuthenticatedAppPengeluaranRoute
   '/app/profil': typeof AuthenticatedAppProfilRoute
+  '/app/scan-struk': typeof AuthenticatedAppScanStrukRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/app': typeof AuthenticatedAppIndexRoute
@@ -279,6 +288,7 @@ export interface FileRoutesById {
   '/_authenticated/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/_authenticated/app/pengeluaran': typeof AuthenticatedAppPengeluaranRoute
   '/_authenticated/app/profil': typeof AuthenticatedAppProfilRoute
+  '/_authenticated/app/scan-struk': typeof AuthenticatedAppScanStrukRoute
   '/_authenticated/app/selesai': typeof AuthenticatedAppSelesaiRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
@@ -311,6 +321,7 @@ export interface FileRouteTypes {
     | '/app/mulai-belanja'
     | '/app/pengeluaran'
     | '/app/profil'
+    | '/app/scan-struk'
     | '/app/selesai'
     | '/admin/'
     | '/app/'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/app/mulai-belanja'
     | '/app/pengeluaran'
     | '/app/profil'
+    | '/app/scan-struk'
     | '/app/selesai'
     | '/admin'
     | '/app'
@@ -370,6 +382,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/mulai-belanja'
     | '/_authenticated/app/pengeluaran'
     | '/_authenticated/app/profil'
+    | '/_authenticated/app/scan-struk'
     | '/_authenticated/app/selesai'
     | '/_authenticated/admin/'
     | '/_authenticated/app/'
@@ -456,6 +469,13 @@ declare module '@tanstack/react-router' {
       path: '/selesai'
       fullPath: '/app/selesai'
       preLoaderRoute: typeof AuthenticatedAppSelesaiRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/scan-struk': {
+      id: '/_authenticated/app/scan-struk'
+      path: '/scan-struk'
+      fullPath: '/app/scan-struk'
+      preLoaderRoute: typeof AuthenticatedAppScanStrukRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/profil': {
@@ -633,6 +653,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppMulaiBelanjaRoute: typeof AuthenticatedAppMulaiBelanjaRoute
   AuthenticatedAppPengeluaranRoute: typeof AuthenticatedAppPengeluaranRoute
   AuthenticatedAppProfilRoute: typeof AuthenticatedAppProfilRoute
+  AuthenticatedAppScanStrukRoute: typeof AuthenticatedAppScanStrukRoute
   AuthenticatedAppSelesaiRoute: typeof AuthenticatedAppSelesaiRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppHistoryIdRoute: typeof AuthenticatedAppHistoryIdRoute
@@ -648,6 +669,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppMulaiBelanjaRoute: AuthenticatedAppMulaiBelanjaRoute,
   AuthenticatedAppPengeluaranRoute: AuthenticatedAppPengeluaranRoute,
   AuthenticatedAppProfilRoute: AuthenticatedAppProfilRoute,
+  AuthenticatedAppScanStrukRoute: AuthenticatedAppScanStrukRoute,
   AuthenticatedAppSelesaiRoute: AuthenticatedAppSelesaiRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppHistoryIdRoute: AuthenticatedAppHistoryIdRoute,
