@@ -24,3 +24,15 @@ export function getServerConfig() {
     //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
   };
 }
+
+// Gemini config for AI price estimation. The API key is server-only.
+// useSearchGrounding is OFF by default (MVP runs on the model's own
+// knowledge); set GEMINI_SEARCH_GROUNDING=true to enable Google Search
+// grounding for fresher "harga terkini" without touching the call site.
+export function getGeminiConfig() {
+  return {
+    apiKey: process.env.GEMINI_API_KEY?.trim(),
+    model: process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash",
+    useSearchGrounding: process.env.GEMINI_SEARCH_GROUNDING === "true",
+  };
+}

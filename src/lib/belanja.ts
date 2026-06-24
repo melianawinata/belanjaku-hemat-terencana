@@ -10,6 +10,7 @@ export interface BelanjaItemRow {
   jumlah: number;
   satuan: string;
   estimasi_harga: number;
+  estimasi_sumber: "histori" | "ai" | "manual" | null;
   harga_aktual: number | null;
   toko_id: string | null;
   sudah_dibeli: boolean;
