@@ -311,15 +311,28 @@ function BelanjaPage() {
                             </span>
                           )}
                         </p>
-                        <p className="font-mono text-xs text-muted-foreground">
-                          {formatRupiah(i.estimasi_harga)} / {i.satuan} · subtotal{" "}
-                          {formatRupiah(Number(i.estimasi_harga) * Number(i.jumlah))}
+                        <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 font-mono text-xs text-muted-foreground">
+                          <span>Rp</span>
+                          <DraftInput
+                            type="number"
+                            value={String(i.estimasi_harga)}
+                            inputClassName="h-7 w-24 text-xs"
+                            onCommit={(raw) => {
+                              const n = Number(raw);
+                              if (raw.trim() !== "" && !Number.isNaN(n) && n >= 0)
+                                updateItem(i.id, { estimasi_harga: n, estimasi_sumber: "manual" });
+                            }}
+                          />
+                          <span>/ {i.satuan}</span>
                           {i.estimasi_sumber === "ai" && (
-                            <span className="ml-1.5 inline-flex items-center gap-0.5 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                            <span className="inline-flex items-center gap-0.5 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
                               <Sparkles className="h-2.5 w-2.5" /> AI
                             </span>
                           )}
-                        </p>
+                          <span>
+                            · subtotal {formatRupiah(Number(i.estimasi_harga) * Number(i.jumlah))}
+                          </span>
+                        </div>
                       </div>
                       <div className="flex items-center gap-1">
                         <DraftInput
