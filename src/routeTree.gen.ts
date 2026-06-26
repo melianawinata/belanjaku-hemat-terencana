@@ -13,7 +13,9 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedLengkapiProfilRouteImport } from './routes/_authenticated/lengkapi-profil'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
@@ -59,11 +61,22 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLengkapiProfilRoute =
+  AuthenticatedLengkapiProfilRouteImport.update({
+    id: '/lengkapi-profil',
+    path: '/lengkapi-profil',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -206,11 +219,13 @@ const AuthenticatedAdminUsersIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/app': typeof AuthenticatedAppRouteWithChildren
+  '/lengkapi-profil': typeof AuthenticatedLengkapiProfilRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/admin/item': typeof AuthenticatedAdminItemRoute
@@ -237,9 +252,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/lengkapi-profil': typeof AuthenticatedLengkapiProfilRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/admin/item': typeof AuthenticatedAdminItemRoute
@@ -268,11 +285,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
+  '/_authenticated/lengkapi-profil': typeof AuthenticatedLengkapiProfilRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/default-item': typeof AuthenticatedAdminDefaultItemRoute
   '/_authenticated/admin/item': typeof AuthenticatedAdminItemRoute
@@ -305,7 +324,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/admin'
     | '/app'
+    | '/lengkapi-profil'
     | '/onboarding'
+    | '/auth/callback'
     | '/admin/dashboard'
     | '/admin/default-item'
     | '/admin/item'
@@ -334,7 +355,9 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/lengkapi-profil'
     | '/onboarding'
+    | '/auth/callback'
     | '/admin/dashboard'
     | '/admin/default-item'
     | '/admin/item'
@@ -366,7 +389,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/app'
+    | '/_authenticated/lengkapi-profil'
     | '/_authenticated/onboarding'
+    | '/auth/callback'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/default-item'
     | '/_authenticated/admin/item'
@@ -395,7 +420,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
@@ -429,11 +454,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/lengkapi-profil': {
+      id: '/_authenticated/lengkapi-profil'
+      path: '/lengkapi-profil'
+      fullPath: '/lengkapi-profil'
+      preLoaderRoute: typeof AuthenticatedLengkapiProfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/app': {
@@ -682,22 +721,34 @@ const AuthenticatedAppRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
+  AuthenticatedLengkapiProfilRoute: typeof AuthenticatedLengkapiProfilRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
+  AuthenticatedLengkapiProfilRoute: AuthenticatedLengkapiProfilRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport

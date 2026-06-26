@@ -63,3 +63,24 @@ export function useAuth() {
 export async function logActivity(userId: string, tipe: string, deskripsi: string) {
   await supabase.from("aktivitas").insert({ user_id: userId, tipe, deskripsi });
 }
+
+/**
+ * Menentukan tujuan navigasi setelah autentikasi (email maupun Google).
+ * Satu sumber kebenaran agar konsisten dipakai di /auth dan /auth/callback.
+ *
+ * - Profil belum lengkap (kategori_user_id NULL, mis. user baru via Google)
+ *   -> halaman Lengkapi Profil.
+ * - Admin -> dashboard admin.
+ * - Selain itu -> dashboard aplikasi.
+ */
+export async function routeAfterAuth(
+  userId: string,
+): Promise<"/lengkapi-profil" | "/admin/dashboard" | "/app/dashboard"> {
+  const [{ data: profile }, { data: roles }] = await Promise.all([
+    supabase.from("profiles").select("kategori_user_id").eq("id", userId).maybeSingle(),
+    supabase.from("user_roles").select("role").eq("user_id", userId),
+  ]);
+  if (!profile?.kategori_user_id) return "/lengkapi-profil";
+  const isAdmin = (roles ?? []).some((r) => r.role === "admin");
+  return isAdmin ? "/admin/dashboard" : "/app/dashboard";
+}
