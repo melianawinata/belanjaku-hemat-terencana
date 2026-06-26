@@ -40,6 +40,14 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      // Webhook Midtrans: endpoint HTTP mentah (bukan serverFn RPC). Ditangani
+      // sebelum delegasi ke TanStack agar bisa baca raw body & balas status apa pun.
+      const url = new URL(request.url);
+      if (request.method === "POST" && url.pathname === "/api/midtrans/webhook") {
+        const { handleMidtransWebhook } = await import("./lib/api/midtrans-webhook.server");
+        return await handleMidtransWebhook(request);
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

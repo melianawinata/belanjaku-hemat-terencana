@@ -37,8 +37,11 @@ import { Route as AuthenticatedAdminKategoriBarangRouteImport } from './routes/_
 import { Route as AuthenticatedAdminItemRouteImport } from './routes/_authenticated/admin.item'
 import { Route as AuthenticatedAdminDefaultItemRouteImport } from './routes/_authenticated/admin.default-item'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
+import { Route as AuthenticatedAppLanggananIndexRouteImport } from './routes/_authenticated/app.langganan.index'
 import { Route as AuthenticatedAppHistoryIndexRouteImport } from './routes/_authenticated/app.history.index'
 import { Route as AuthenticatedAdminUsersIndexRouteImport } from './routes/_authenticated/admin.users.index'
+import { Route as AuthenticatedAppLanggananStatusRouteImport } from './routes/_authenticated/app.langganan.status'
+import { Route as AuthenticatedAppLanggananCheckoutRouteImport } from './routes/_authenticated/app.langganan.checkout'
 import { Route as AuthenticatedAppHistoryIdRouteImport } from './routes/_authenticated/app.history.$id'
 import { Route as AuthenticatedAdminUsersIdRouteImport } from './routes/_authenticated/admin.users.$id'
 
@@ -192,6 +195,12 @@ const AuthenticatedAdminDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAppLanggananIndexRoute =
+  AuthenticatedAppLanggananIndexRouteImport.update({
+    id: '/langganan/',
+    path: '/langganan/',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppHistoryIndexRoute =
   AuthenticatedAppHistoryIndexRouteImport.update({
     id: '/history/',
@@ -203,6 +212,18 @@ const AuthenticatedAdminUsersIndexRoute =
     id: '/users/',
     path: '/users/',
     getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAppLanggananStatusRoute =
+  AuthenticatedAppLanggananStatusRouteImport.update({
+    id: '/langganan/status',
+    path: '/langganan/status',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppLanggananCheckoutRoute =
+  AuthenticatedAppLanggananCheckoutRouteImport.update({
+    id: '/langganan/checkout',
+    path: '/langganan/checkout',
+    getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppHistoryIdRoute =
   AuthenticatedAppHistoryIdRouteImport.update({
@@ -247,8 +268,11 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AuthenticatedAppIndexRoute
   '/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
   '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
+  '/app/langganan/checkout': typeof AuthenticatedAppLanggananCheckoutRoute
+  '/app/langganan/status': typeof AuthenticatedAppLanggananStatusRoute
   '/admin/users/': typeof AuthenticatedAdminUsersIndexRoute
   '/app/history/': typeof AuthenticatedAppHistoryIndexRoute
+  '/app/langganan/': typeof AuthenticatedAppLanggananIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -278,8 +302,11 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppIndexRoute
   '/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
   '/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
+  '/app/langganan/checkout': typeof AuthenticatedAppLanggananCheckoutRoute
+  '/app/langganan/status': typeof AuthenticatedAppLanggananStatusRoute
   '/admin/users': typeof AuthenticatedAdminUsersIndexRoute
   '/app/history': typeof AuthenticatedAppHistoryIndexRoute
+  '/app/langganan': typeof AuthenticatedAppLanggananIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -313,8 +340,11 @@ export interface FileRoutesById {
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
   '/_authenticated/app/history/$id': typeof AuthenticatedAppHistoryIdRoute
+  '/_authenticated/app/langganan/checkout': typeof AuthenticatedAppLanggananCheckoutRoute
+  '/_authenticated/app/langganan/status': typeof AuthenticatedAppLanggananStatusRoute
   '/_authenticated/admin/users/': typeof AuthenticatedAdminUsersIndexRoute
   '/_authenticated/app/history/': typeof AuthenticatedAppHistoryIndexRoute
+  '/_authenticated/app/langganan/': typeof AuthenticatedAppLanggananIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -348,8 +378,11 @@ export interface FileRouteTypes {
     | '/app/'
     | '/admin/users/$id'
     | '/app/history/$id'
+    | '/app/langganan/checkout'
+    | '/app/langganan/status'
     | '/admin/users/'
     | '/app/history/'
+    | '/app/langganan/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -379,8 +412,11 @@ export interface FileRouteTypes {
     | '/app'
     | '/admin/users/$id'
     | '/app/history/$id'
+    | '/app/langganan/checkout'
+    | '/app/langganan/status'
     | '/admin/users'
     | '/app/history'
+    | '/app/langganan'
   id:
     | '__root__'
     | '/'
@@ -413,8 +449,11 @@ export interface FileRouteTypes {
     | '/_authenticated/app/'
     | '/_authenticated/admin/users/$id'
     | '/_authenticated/app/history/$id'
+    | '/_authenticated/app/langganan/checkout'
+    | '/_authenticated/app/langganan/status'
     | '/_authenticated/admin/users/'
     | '/_authenticated/app/history/'
+    | '/_authenticated/app/langganan/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -622,6 +661,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/app/langganan/': {
+      id: '/_authenticated/app/langganan/'
+      path: '/langganan'
+      fullPath: '/app/langganan/'
+      preLoaderRoute: typeof AuthenticatedAppLanggananIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/history/': {
       id: '/_authenticated/app/history/'
       path: '/history'
@@ -635,6 +681,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/users/'
       preLoaderRoute: typeof AuthenticatedAdminUsersIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/app/langganan/status': {
+      id: '/_authenticated/app/langganan/status'
+      path: '/langganan/status'
+      fullPath: '/app/langganan/status'
+      preLoaderRoute: typeof AuthenticatedAppLanggananStatusRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/langganan/checkout': {
+      id: '/_authenticated/app/langganan/checkout'
+      path: '/langganan/checkout'
+      fullPath: '/app/langganan/checkout'
+      preLoaderRoute: typeof AuthenticatedAppLanggananCheckoutRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/history/$id': {
       id: '/_authenticated/app/history/$id'
@@ -696,7 +756,10 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppSelesaiRoute: typeof AuthenticatedAppSelesaiRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppHistoryIdRoute: typeof AuthenticatedAppHistoryIdRoute
+  AuthenticatedAppLanggananCheckoutRoute: typeof AuthenticatedAppLanggananCheckoutRoute
+  AuthenticatedAppLanggananStatusRoute: typeof AuthenticatedAppLanggananStatusRoute
   AuthenticatedAppHistoryIndexRoute: typeof AuthenticatedAppHistoryIndexRoute
+  AuthenticatedAppLanggananIndexRoute: typeof AuthenticatedAppLanggananIndexRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
@@ -712,7 +775,11 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppSelesaiRoute: AuthenticatedAppSelesaiRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppHistoryIdRoute: AuthenticatedAppHistoryIdRoute,
+  AuthenticatedAppLanggananCheckoutRoute:
+    AuthenticatedAppLanggananCheckoutRoute,
+  AuthenticatedAppLanggananStatusRoute: AuthenticatedAppLanggananStatusRoute,
   AuthenticatedAppHistoryIndexRoute: AuthenticatedAppHistoryIndexRoute,
+  AuthenticatedAppLanggananIndexRoute: AuthenticatedAppLanggananIndexRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =

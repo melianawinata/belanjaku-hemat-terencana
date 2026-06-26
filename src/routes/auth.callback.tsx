@@ -1,18 +1,23 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { routeAfterAuth } from "@/lib/useAuth";
+import { routeAfterAuth, safeInternalPath } from "@/lib/useAuth";
 import { Loader2, ShoppingBasket } from "lucide-react";
 
 export const Route = createFileRoute("/auth/callback")({
   // Hanya render di client: sesi OAuth dibaca dari URL hash + localStorage.
   ssr: false,
+  validateSearch: (s: Record<string, unknown>): { redirect?: string } => ({
+    redirect: typeof s.redirect === "string" ? s.redirect : undefined,
+  }),
   head: () => ({ meta: [{ title: "Masuk… — BelanjaKu" }] }),
   component: AuthCallbackPage,
 });
 
 function AuthCallbackPage() {
   const navigate = useNavigate();
+  const router = useRouter();
+  const { redirect: redirectTo } = Route.useSearch();
   const [err, setErr] = useState("");
 
   useEffect(() => {
@@ -22,6 +27,12 @@ function AuthCallbackPage() {
       if (done) return;
       done = true;
       const target = await routeAfterAuth(userId);
+      // Profil lengkap + ada tujuan asli -> kembali ke sana (mis. checkout).
+      const safe = safeInternalPath(redirectTo);
+      if (safe && target !== "/lengkapi-profil") {
+        router.history.replace(safe);
+        return;
+      }
       navigate({ to: target, replace: true });
     };
 
@@ -49,7 +60,7 @@ function AuthCallbackPage() {
       sub.subscription.unsubscribe();
       clearTimeout(timer);
     };
-  }, [navigate]);
+  }, [navigate, router, redirectTo]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-app-bg px-4 text-center">

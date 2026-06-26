@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { getPlans } from "@/lib/api/subscription.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -748,7 +749,7 @@ const BODY = `
         <a href="/auth" class="btn btn-ghost">Mulai Gratis</a>
       </div>
       <!-- Plus -->
-      <div class="plan pop reveal">
+      <div class="plan pop reveal" data-plan="plus">
         <span class="pop-tag">Paling Populer</span>
         <h3>Plus</h3>
         <p class="desc">Untuk rumah tangga yang ingin kontrol penuh.</p>
@@ -761,10 +762,10 @@ const BODY = `
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Laporan pengeluaran detail</li>
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sinkronisasi multi-perangkat</li>
         </ul>
-        <a href="#" class="btn btn-primary">Pilih Plus</a>
+        <a href="/app/langganan/checkout?plan=plus&siklus=bulanan" id="btnPlus" class="btn btn-primary">Pilih Plus</a>
       </div>
       <!-- Keluarga -->
-      <div class="plan reveal">
+      <div class="plan reveal" data-plan="keluarga">
         <h3>Keluarga</h3>
         <p class="desc">Kolaborasi seluruh anggota keluarga.</p>
         <div class="price" data-month="Rp 29.000" data-year="Rp 23.200"><span data-price>Rp 29.000</span><small>/bln</small></div>
@@ -776,7 +777,7 @@ const BODY = `
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Barcode scanner</li>
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Integrasi promo & perbandingan harga</li>
         </ul>
-        <a href="#" class="btn btn-ghost">Pilih Keluarga</a>
+        <a href="/app/langganan/checkout?plan=keluarga&siklus=bulanan" id="btnKeluarga" class="btn btn-ghost">Pilih Keluarga</a>
       </div>
     </div>
     <p class="note">Bisa berhenti kapan saja, tanpa kontrak.</p>
@@ -916,7 +917,18 @@ const SCRIPT = `
     document.querySelectorAll('.per[data-permonth]').forEach(pr=>{
       pr.textContent=year?pr.dataset.peryear:pr.dataset.permonth;
     });
+    syncPlanLinks(year);
   });
+
+  // Arahkan tombol "Pilih ..." ke checkout dengan siklus sesuai toggle.
+  function syncPlanLinks(year){
+    const siklus=year?'tahunan':'bulanan';
+    const bp=document.getElementById('btnPlus');
+    if(bp) bp.setAttribute('href','/app/langganan/checkout?plan=plus&siklus='+siklus);
+    const bk=document.getElementById('btnKeluarga');
+    if(bk) bk.setAttribute('href','/app/langganan/checkout?plan=keluarga&siklus='+siklus);
+  }
+  syncPlanLinks(false);
 
   // ===== FAQ accordion =====
   document.querySelectorAll('.faq-item').forEach(item=>{
@@ -933,6 +945,27 @@ function Index() {
   useEffect(() => {
     const run = new Function(SCRIPT);
     run();
+
+    // Harga di landing diambil dari tabel subscription_plans (sumber kebenaran),
+    // menimpa nilai hardcoded. harga_tahunan ditampilkan sebagai ekuivalen /bln.
+    getPlans()
+      .then((plans) => {
+        const fmt = (n: number) => "Rp " + Math.round(n).toLocaleString("id-ID");
+        const sw = document.getElementById("switch");
+        const year = sw?.classList.contains("year") ?? false;
+        plans.forEach((p) => {
+          const card = document.querySelector(`.plan[data-plan="${p.code}"]`);
+          const priceEl = card?.querySelector(".price[data-month]") as HTMLElement | null;
+          if (!priceEl) return;
+          priceEl.dataset.month = fmt(p.harga_bulanan);
+          priceEl.dataset.year = fmt(p.harga_tahunan / 12);
+          const span = priceEl.querySelector("[data-price]") as HTMLElement | null;
+          if (span) span.textContent = year ? priceEl.dataset.year! : priceEl.dataset.month!;
+        });
+      })
+      .catch(() => {
+        /* biarkan harga hardcoded sebagai fallback */
+      });
   }, []);
 
   return (

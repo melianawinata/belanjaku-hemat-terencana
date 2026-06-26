@@ -6,6 +6,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5";
   };
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       aktivitas: {
@@ -347,6 +372,86 @@ export type Database = {
         };
         Relationships: [];
       };
+      kategori_user: {
+        Row: {
+          created_at: string;
+          id: string;
+          nama: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          nama: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          nama?: string;
+        };
+        Relationships: [];
+      };
+      payment_transactions: {
+        Row: {
+          created_at: string;
+          cycle: string;
+          expired_at: string | null;
+          gross_amount: number;
+          id: string;
+          midtrans_status: string | null;
+          order_id: string;
+          paid_at: string | null;
+          payment_type: string | null;
+          plan_code: string;
+          raw_notification: Json | null;
+          snap_token: string | null;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          cycle?: string;
+          expired_at?: string | null;
+          gross_amount: number;
+          id?: string;
+          midtrans_status?: string | null;
+          order_id: string;
+          paid_at?: string | null;
+          payment_type?: string | null;
+          plan_code: string;
+          raw_notification?: Json | null;
+          snap_token?: string | null;
+          status?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          cycle?: string;
+          expired_at?: string | null;
+          gross_amount?: number;
+          id?: string;
+          midtrans_status?: string | null;
+          order_id?: string;
+          paid_at?: string | null;
+          payment_type?: string | null;
+          plan_code?: string;
+          raw_notification?: Json | null;
+          snap_token?: string | null;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_plan_code_fkey";
+            columns: ["plan_code"];
+            isOneToOne: false;
+            referencedRelation: "subscription_plans";
+            referencedColumns: ["code"];
+          },
+        ];
+      };
       pengeluaran_lain: {
         Row: {
           created_at: string;
@@ -442,24 +547,6 @@ export type Database = {
           },
         ];
       };
-      kategori_user: {
-        Row: {
-          created_at: string;
-          id: string;
-          nama: string;
-        };
-        Insert: {
-          created_at?: string;
-          id?: string;
-          nama: string;
-        };
-        Update: {
-          created_at?: string;
-          id?: string;
-          nama?: string;
-        };
-        Relationships: [];
-      };
       profiles: {
         Row: {
           created_at: string;
@@ -516,6 +603,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      subscription_plans: {
+        Row: {
+          aktif: boolean;
+          code: string;
+          created_at: string;
+          harga_bulanan: number;
+          harga_tahunan: number;
+          nama: string;
+          urutan: number;
+        };
+        Insert: {
+          aktif?: boolean;
+          code: string;
+          created_at?: string;
+          harga_bulanan: number;
+          harga_tahunan: number;
+          nama: string;
+          urutan?: number;
+        };
+        Update: {
+          aktif?: boolean;
+          code?: string;
+          created_at?: string;
+          harga_bulanan?: number;
+          harga_tahunan?: number;
+          nama?: string;
+          urutan?: number;
+        };
+        Relationships: [];
+      };
       toko: {
         Row: {
           created_at: string;
@@ -558,11 +675,66 @@ export type Database = {
         };
         Relationships: [];
       };
+      user_subscriptions: {
+        Row: {
+          created_at: string;
+          cycle: string;
+          id: string;
+          period_end: string;
+          period_start: string;
+          plan_code: string;
+          source_order_id: string | null;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          cycle?: string;
+          id?: string;
+          period_end: string;
+          period_start?: string;
+          plan_code: string;
+          source_order_id?: string | null;
+          status?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          cycle?: string;
+          id?: string;
+          period_end?: string;
+          period_start?: string;
+          plan_code?: string;
+          source_order_id?: string | null;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_plan_code_fkey";
+            columns: ["plan_code"];
+            isOneToOne: false;
+            referencedRelation: "subscription_plans";
+            referencedColumns: ["code"];
+          },
+          {
+            foreignKeyName: "user_subscriptions_source_order_id_fkey";
+            columns: ["source_order_id"];
+            isOneToOne: false;
+            referencedRelation: "payment_transactions";
+            referencedColumns: ["order_id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      get_active_plan: { Args: { _user: string }; Returns: string };
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"];
@@ -696,6 +868,9 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["customer", "admin"],

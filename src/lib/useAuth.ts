@@ -60,6 +60,19 @@ export function useAuth() {
   };
 }
 
+/**
+ * Validasi path tujuan redirect setelah login. Hanya mengizinkan path
+ * internal relatif (mencegah open-redirect ke domain lain) dan menolak
+ * kembali ke /auth (mencegah loop). Mengembalikan path aman atau null.
+ */
+export function safeInternalPath(p: string | null | undefined): string | null {
+  if (!p) return null;
+  if (!p.startsWith("/")) return null; // wajib relatif
+  if (p.startsWith("//")) return null; // protocol-relative -> eksternal
+  if (p.startsWith("/auth")) return null; // hindari loop ke halaman auth
+  return p;
+}
+
 export async function logActivity(userId: string, tipe: string, deskripsi: string) {
   await supabase.from("aktivitas").insert({ user_id: userId, tipe, deskripsi });
 }

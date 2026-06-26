@@ -1,21 +1,33 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { routeAfterAuth } from "@/lib/useAuth";
+import { routeAfterAuth, safeInternalPath } from "@/lib/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { Loader2, ShoppingBasket, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (s: Record<string, unknown>): { redirect?: string } => ({
+    redirect: typeof s.redirect === "string" ? s.redirect : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Masuk / Daftar — BelanjaKu" },
-      { name: "description", content: "Masuk atau daftar ke BelanjaKu untuk mulai mengatur belanja bulananmu." },
+      {
+        name: "description",
+        content: "Masuk atau daftar ke BelanjaKu untuk mulai mengatur belanja bulananmu.",
+      },
     ],
   }),
   component: AuthPage,
@@ -36,6 +48,8 @@ function passwordStrength(pw: string): { label: string; pct: number; color: stri
 
 function AuthPage() {
   const navigate = useNavigate();
+  const router = useRouter();
+  const { redirect: redirectTo } = Route.useSearch();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -44,12 +58,17 @@ function AuthPage() {
         // User yang sudah masuk tidak boleh berhenti di halaman masuk/daftar.
         // Profil belum lengkap -> diarahkan ke Lengkapi Profil.
         const target = await routeAfterAuth(data.session.user.id);
-        navigate({ to: target, replace: true });
+        const safe = safeInternalPath(redirectTo);
+        if (safe && target !== "/lengkapi-profil") {
+          router.history.replace(safe);
+        } else {
+          navigate({ to: target, replace: true });
+        }
       } else {
         setChecking(false);
       }
     });
-  }, [navigate]);
+  }, [navigate, router, redirectTo]);
 
   if (checking) {
     return (
@@ -74,8 +93,12 @@ function AuthPage() {
               <TabsTrigger value="masuk">Masuk</TabsTrigger>
               <TabsTrigger value="daftar">Daftar</TabsTrigger>
             </TabsList>
-            <TabsContent value="masuk"><LoginForm /></TabsContent>
-            <TabsContent value="daftar"><RegisterForm /></TabsContent>
+            <TabsContent value="masuk">
+              <LoginForm />
+            </TabsContent>
+            <TabsContent value="daftar">
+              <RegisterForm />
+            </TabsContent>
           </Tabs>
         </div>
         <p className="mt-4 text-center text-xs text-muted-foreground">
@@ -110,14 +133,19 @@ function GoogleIcon({ className }: { className?: string }) {
 }
 
 function GoogleButton({ label }: { label: string }) {
+  const { redirect: redirectTo } = Route.useSearch();
   const [loading, setLoading] = useState(false);
 
   const masukGoogle = async () => {
     setLoading(true);
+    // Teruskan tujuan asli ke callback agar setelah OAuth user kembali ke sana.
+    const cb = new URL(`${window.location.origin}/auth/callback`);
+    const safe = safeInternalPath(redirectTo);
+    if (safe) cb.searchParams.set("redirect", safe);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: cb.toString(),
         // Selalu tampilkan pemilih akun, hindari auto-login akun yang salah.
         queryParams: { prompt: "select_account" },
       },
@@ -130,8 +158,18 @@ function GoogleButton({ label }: { label: string }) {
   };
 
   return (
-    <Button type="button" variant="outline" className="w-full" onClick={masukGoogle} disabled={loading}>
-      {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />}
+    <Button
+      type="button"
+      variant="outline"
+      className="w-full"
+      onClick={masukGoogle}
+      disabled={loading}
+    >
+      {loading ? (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
+        <GoogleIcon className="mr-2 h-4 w-4" />
+      )}
       {label}
     </Button>
   );
@@ -152,6 +190,8 @@ function OrDivider() {
 
 function LoginForm() {
   const navigate = useNavigate();
+  const router = useRouter();
+  const { redirect: redirectTo } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -168,10 +208,15 @@ function LoginForm() {
       setErr("Email atau password salah.");
       return;
     }
-    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
-    const isAdmin = (roles ?? []).some((r) => r.role === "admin");
     toast.success("Berhasil masuk. Selamat datang kembali! 👋");
-    navigate({ to: isAdmin ? "/admin/dashboard" : "/app/dashboard" });
+    // Kembali ke tujuan asli bila ada (mis. checkout), selama profil lengkap.
+    const target = await routeAfterAuth(data.user.id);
+    const safe = safeInternalPath(redirectTo);
+    if (safe && target !== "/lengkapi-profil") {
+      router.history.push(safe);
+    } else {
+      navigate({ to: target });
+    }
   };
 
   return (
@@ -179,30 +224,48 @@ function LoginForm() {
       <GoogleButton label="Masuk dengan Google" />
       <OrDivider />
       <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label htmlFor="login-email">Email</Label>
-        <Input id="login-email" type="email" required value={email}
-          onChange={(e) => setEmail(e.target.value)} placeholder="kamu@email.com" />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="login-pw">Password</Label>
-        <div className="relative">
-          <Input id="login-pw" type={showPassword ? "text" : "password"} required value={password}
-            onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pr-10" />
-          <button type="button" onClick={() => setShowPassword((v) => !v)}
-            className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
-            aria-label={showPassword ? "Sembunyikan password" : "Lihat password"}>
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
+        <div className="space-y-1.5">
+          <Label htmlFor="login-email">Email</Label>
+          <Input
+            id="login-email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="kamu@email.com"
+          />
         </div>
-      </div>
-      {err && <p className="text-sm text-destructive">{err}</p>}
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Masuk
-      </Button>
-      <div className="flex items-center justify-between text-sm">
-        <Link to="/reset-password" className="text-info hover:underline">Lupa password?</Link>
-      </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="login-pw">Password</Label>
+          <div className="relative">
+            <Input
+              id="login-pw"
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+              aria-label={showPassword ? "Sembunyikan password" : "Lihat password"}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+        {err && <p className="text-sm text-destructive">{err}</p>}
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Masuk
+        </Button>
+        <div className="flex items-center justify-between text-sm">
+          <Link to="/reset-password" className="text-info hover:underline">
+            Lupa password?
+          </Link>
+        </div>
       </form>
     </div>
   );
@@ -230,8 +293,14 @@ function RegisterForm() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
-    if (password.length < 6) { setErr("Password minimal 6 karakter."); return; }
-    if (!kategori) { setErr("Pilih kategori pengguna dulu ya."); return; }
+    if (password.length < 6) {
+      setErr("Password minimal 6 karakter.");
+      return;
+    }
+    if (!kategori) {
+      setErr("Pilih kategori pengguna dulu ya.");
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
@@ -255,41 +324,68 @@ function RegisterForm() {
       <GoogleButton label="Daftar dengan Google" />
       <OrDivider />
       <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label htmlFor="reg-nama">Nama</Label>
-        <Input id="reg-nama" required value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Nama lengkap" />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="reg-email">Email</Label>
-        <Input id="reg-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="kamu@email.com" />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="reg-pw">Password</Label>
-        <Input id="reg-pw" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Minimal 6 karakter" />
-        {password && (
-          <div className="space-y-1 pt-1">
-            <div className="h-1.5 w-full rounded-full bg-muted">
-              <div className={`h-1.5 rounded-full transition-all ${strength.color}`} style={{ width: `${strength.pct}%` }} />
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-nama">Nama</Label>
+          <Input
+            id="reg-nama"
+            required
+            value={nama}
+            onChange={(e) => setNama(e.target.value)}
+            placeholder="Nama lengkap"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-email">Email</Label>
+          <Input
+            id="reg-email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="kamu@email.com"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-pw">Password</Label>
+          <Input
+            id="reg-pw"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Minimal 6 karakter"
+          />
+          {password && (
+            <div className="space-y-1 pt-1">
+              <div className="h-1.5 w-full rounded-full bg-muted">
+                <div
+                  className={`h-1.5 rounded-full transition-all ${strength.color}`}
+                  style={{ width: `${strength.pct}%` }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">Kekuatan: {strength.label}</p>
             </div>
-            <p className="text-xs text-muted-foreground">Kekuatan: {strength.label}</p>
-          </div>
-        )}
-      </div>
-      <div className="space-y-1.5">
-        <Label>Kategori Pengguna</Label>
-        <Select value={kategori} onValueChange={setKategori}>
-          <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
-          <SelectContent>
-            {(kategoriList ?? []).map((k) => (
-              <SelectItem key={k.id} value={k.id}>{k.nama}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      {err && <p className="text-sm text-destructive">{err}</p>}
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Daftar
-      </Button>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <Label>Kategori Pengguna</Label>
+          <Select value={kategori} onValueChange={setKategori}>
+            <SelectTrigger>
+              <SelectValue placeholder="Pilih kategori" />
+            </SelectTrigger>
+            <SelectContent>
+              {(kategoriList ?? []).map((k) => (
+                <SelectItem key={k.id} value={k.id}>
+                  {k.nama}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {err && <p className="text-sm text-destructive">{err}</p>}
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Daftar
+        </Button>
       </form>
     </div>
   );

@@ -25,6 +25,32 @@ export function getServerConfig() {
   };
 }
 
+// Midtrans (payment gateway) config. SERVER_KEY is server-only (signs Snap
+// requests + verifies webhook signatures); CLIENT_KEY is safe to ship to the
+// browser (used by snap.js). Sandbox vs Production is toggled by
+// MIDTRANS_IS_PRODUCTION — default is sandbox so dev/testing never touches
+// real funds. Endpoints differ per environment.
+export function getMidtransConfig() {
+  const isProduction = process.env.MIDTRANS_IS_PRODUCTION === "true";
+  return {
+    serverKey: process.env.MIDTRANS_SERVER_KEY?.trim() ?? "",
+    clientKey: process.env.MIDTRANS_CLIENT_KEY?.trim() ?? "",
+    isProduction,
+    // Snap API (create transaction / get token).
+    snapBaseUrl: isProduction
+      ? "https://app.midtrans.com/snap/v1/transactions"
+      : "https://app.sandbox.midtrans.com/snap/v1/transactions",
+    // snap.js loaded by the browser to render the payment popup.
+    snapJsUrl: isProduction
+      ? "https://app.midtrans.com/snap/snap.js"
+      : "https://app.sandbox.midtrans.com/snap/snap.js",
+    // Core API v2 (status / cancel / dll) untuk operasi transaksi.
+    apiBaseUrl: isProduction
+      ? "https://api.midtrans.com/v2"
+      : "https://api.sandbox.midtrans.com/v2",
+  };
+}
+
 // Gemini config for AI price estimation. The API key is server-only.
 // useSearchGrounding is OFF by default (MVP runs on the model's own
 // knowledge); set GEMINI_SEARCH_GROUNDING=true to enable Google Search
