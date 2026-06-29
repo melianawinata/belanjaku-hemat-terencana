@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
-import { bulanIni, formatRupiah, formatTanggal, namaBulan } from "@/lib/format";
+import { formatRupiah, formatTanggal, namaBulan } from "@/lib/format";
+import { usePeriode } from "@/lib/periode";
 import { getOrCreateBelanja } from "@/lib/belanja";
+import { getKeluargaId } from "@/lib/keluarga";
+import { useKeluarga } from "@/lib/useKeluarga";
 import {
   getKategoriPengeluaran, getPengeluaranLain, totalPengeluaran, pengeluaranPerKategori, tanggalHariIni,
   getPengeluaranRutin, generateRutinBulanIni, getTrenPengeluaran, METODE_BAYAR,
@@ -33,7 +36,9 @@ const CHART = ["#16A34A", "#2563EB", "#38BDF8", "#D97706", "#9333EA", "#DC2626",
 
 function PengeluaranPage() {
   const { userId } = useAuth();
-  const { bulan, tahun } = bulanIni();
+  const { bulan, tahun } = usePeriode();
+  const { anggota, isKepala, memberCount } = useKeluarga();
+  const namaAnggota = new Map(anggota.map((a) => [a.user_id, a.nama]));
 
   // Form catat pengeluaran
   const [tanggal, setTanggal] = useState(tanggalHariIni());
@@ -83,9 +88,11 @@ function PengeluaranPage() {
     const n = Number(nominal);
     if (!nominal.trim() || Number.isNaN(n) || n <= 0) { toast.error("Nominal harus lebih dari 0."); return; }
     if (!userId) return;
+    const keluargaId = data?.belanja?.keluarga_id;
+    if (!keluargaId) { toast.error("Keluarga belum siap, coba lagi."); return; }
     setSaving(true);
     const { error } = await supabase.from("pengeluaran_lain").insert({
-      user_id: userId, tanggal, kategori_pengeluaran_id: kategoriId || null,
+      user_id: userId, keluarga_id: keluargaId, tanggal, kategori_pengeluaran_id: kategoriId || null,
       deskripsi: deskripsi.trim(), nominal: n, metode_bayar: metode || null,
     });
     setSaving(false);
@@ -261,7 +268,9 @@ function PengeluaranPage() {
                   </div>
                   <span className="shrink-0 font-mono text-sm font-semibold">{formatRupiah(r.nominal)}</span>
                   <Button variant="ghost" size="icon" onClick={() => setEditRutin(r)}><Pencil className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" className="text-destructive" onClick={() => hapusRutin(r.id)}><Trash2 className="h-4 w-4" /></Button>
+                  {(r.user_id === userId || isKepala) && (
+                    <Button variant="ghost" size="icon" className="text-destructive" onClick={() => hapusRutin(r.id)}><Trash2 className="h-4 w-4" /></Button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -316,6 +325,11 @@ function PengeluaranPage() {
                       <span className="font-mono text-xs text-muted-foreground">{formatTanggal(p.tanggal)}</span>
                       {p.metode_bayar && <span className="rounded bg-info/10 px-1.5 py-0.5 text-[10px] font-medium text-info">{p.metode_bayar}</span>}
                       {p.rutin_id && <span className="inline-flex items-center gap-0.5 rounded bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success"><Repeat className="h-3 w-3" /> Rutin</span>}
+                      {memberCount > 1 && (
+                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                          {p.user_id === userId ? "oleh Anda" : `oleh ${namaAnggota.get(p.user_id) ?? "anggota"}`}
+                        </span>
+                      )}
                     </div>
                     {p.deskripsi && <p className="mt-0.5 truncate text-sm">{p.deskripsi}</p>}
                   </div>
@@ -323,9 +337,11 @@ function PengeluaranPage() {
                   <Button variant="ghost" size="icon" onClick={() => setEditing(p)}>
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="text-destructive" onClick={() => hapus(p.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {(p.user_id === userId || isKepala) && (
+                    <Button variant="ghost" size="icon" className="text-destructive" onClick={() => hapus(p.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -459,7 +475,9 @@ function RutinDialog({ entri, kategori, userId, onClose, onSaved }: {
     };
     const { error } = isEdit
       ? await supabase.from("pengeluaran_rutin").update(payload).eq("id", (entri as PengeluaranRutinRow).id)
-      : await supabase.from("pengeluaran_rutin").insert({ ...payload, user_id: userId });
+      : await supabase
+          .from("pengeluaran_rutin")
+          .insert({ ...payload, user_id: userId, keluarga_id: await getKeluargaId(userId) });
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     toast.success(isEdit ? "Pengeluaran rutin diperbarui." : "Pengeluaran rutin ditambahkan.");

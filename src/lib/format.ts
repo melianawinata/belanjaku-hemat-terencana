@@ -30,6 +30,11 @@ export function bulanSebelumnya(bulan: number, tahun: number): { bulan: number; 
   return { bulan: bulan - 1, tahun };
 }
 
+export function bulanBerikutnya(bulan: number, tahun: number): { bulan: number; tahun: number } {
+  if (bulan === 12) return { bulan: 1, tahun: tahun + 1 };
+  return { bulan: bulan + 1, tahun };
+}
+
 export function formatTanggal(iso: string | null | undefined): string {
   if (!iso) return "-";
   const d = new Date(iso);

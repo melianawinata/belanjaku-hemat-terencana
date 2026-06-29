@@ -64,6 +64,7 @@ export type Database = {
           bulan: number;
           created_at: string;
           id: string;
+          keluarga_id: string;
           selesai_at: string | null;
           status: string;
           tahun: number;
@@ -75,6 +76,7 @@ export type Database = {
           bulan: number;
           created_at?: string;
           id?: string;
+          keluarga_id: string;
           selesai_at?: string | null;
           status?: string;
           tahun: number;
@@ -86,12 +88,21 @@ export type Database = {
           bulan?: number;
           created_at?: string;
           id?: string;
+          keluarga_id?: string;
           selesai_at?: string | null;
           status?: string;
           tahun?: number;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "belanja_bulanan_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       belanja_item: {
         Row: {
@@ -390,6 +401,62 @@ export type Database = {
         };
         Relationships: [];
       };
+      keluarga: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          kode_undangan: string;
+          nama: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          kode_undangan: string;
+          nama?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          kode_undangan?: string;
+          nama?: string;
+        };
+        Relationships: [];
+      };
+      keluarga_anggota: {
+        Row: {
+          created_at: string;
+          id: string;
+          keluarga_id: string;
+          peran: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          keluarga_id: string;
+          peran?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          keluarga_id?: string;
+          peran?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "keluarga_anggota_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       payment_transactions: {
         Row: {
           created_at: string;
@@ -458,6 +525,7 @@ export type Database = {
           deskripsi: string;
           id: string;
           kategori_pengeluaran_id: string | null;
+          keluarga_id: string;
           metode_bayar: string | null;
           nominal: number;
           rutin_id: string | null;
@@ -469,6 +537,7 @@ export type Database = {
           deskripsi?: string;
           id?: string;
           kategori_pengeluaran_id?: string | null;
+          keluarga_id: string;
           metode_bayar?: string | null;
           nominal?: number;
           rutin_id?: string | null;
@@ -480,6 +549,7 @@ export type Database = {
           deskripsi?: string;
           id?: string;
           kategori_pengeluaran_id?: string | null;
+          keluarga_id?: string;
           metode_bayar?: string | null;
           nominal?: number;
           rutin_id?: string | null;
@@ -492,6 +562,13 @@ export type Database = {
             columns: ["kategori_pengeluaran_id"];
             isOneToOne: false;
             referencedRelation: "kategori_pengeluaran";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "pengeluaran_lain_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
             referencedColumns: ["id"];
           },
           {
@@ -510,6 +587,7 @@ export type Database = {
           deskripsi: string;
           id: string;
           kategori_pengeluaran_id: string | null;
+          keluarga_id: string;
           metode_bayar: string | null;
           nominal: number;
           tanggal_hari: number;
@@ -521,6 +599,7 @@ export type Database = {
           deskripsi?: string;
           id?: string;
           kategori_pengeluaran_id?: string | null;
+          keluarga_id: string;
           metode_bayar?: string | null;
           nominal?: number;
           tanggal_hari?: number;
@@ -532,6 +611,7 @@ export type Database = {
           deskripsi?: string;
           id?: string;
           kategori_pengeluaran_id?: string | null;
+          keluarga_id?: string;
           metode_bayar?: string | null;
           nominal?: number;
           tanggal_hari?: number;
@@ -543,6 +623,13 @@ export type Database = {
             columns: ["kategori_pengeluaran_id"];
             isOneToOne: false;
             referencedRelation: "kategori_pengeluaran";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "pengeluaran_rutin_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
             referencedColumns: ["id"];
           },
         ];
@@ -742,6 +829,8 @@ export type Database = {
         };
         Returns: boolean;
       };
+      is_kepala: { Args: { _user: string }; Returns: boolean };
+      keluarga_saya: { Args: { _user: string }; Returns: string };
     };
     Enums: {
       app_role: "customer" | "admin";

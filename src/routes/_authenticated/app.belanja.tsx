@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, logActivity } from "@/lib/useAuth";
-import { bulanIni, formatRupiah, namaBulan } from "@/lib/format";
+import { formatRupiah, namaBulan } from "@/lib/format";
+import { usePeriode } from "@/lib/periode";
+import { useKeluarga } from "@/lib/useKeluarga";
 import {
   getOrCreateBelanja,
   getEstimasiHarga,
@@ -68,7 +70,9 @@ function BelanjaPage() {
   const { userId } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { bulan, tahun } = bulanIni();
+  const { bulan, tahun } = usePeriode();
+  const { anggota, isKepala, memberCount } = useKeluarga();
+  const namaAnggota = new Map(anggota.map((a) => [a.user_id, a.nama]));
   const [starting, setStarting] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiRowId, setAiRowId] = useState<string | null>(null);
@@ -195,7 +199,7 @@ function BelanjaPage() {
   if (isLoading) {
     return (
       <>
-        <PageHeader title="Belanja Bulan Ini" />
+        <PageHeader title={`Belanja ${namaBulan(bulan)} ${tahun}`} />
         <div className="space-y-3">
           {[0, 1, 2].map((i) => (
             <Skeleton key={i} className="h-16" />
@@ -208,7 +212,7 @@ function BelanjaPage() {
   return (
     <>
       <PageHeader
-        title="Belanja Bulan Ini"
+        title={`Belanja ${namaBulan(bulan)} ${tahun}`}
         subtitle={`Daftar kebutuhan ${namaBulan(bulan)} ${tahun}`}
         action={
           belanja && (
@@ -332,6 +336,13 @@ function BelanjaPage() {
                           <span>
                             · subtotal {formatRupiah(Number(i.estimasi_harga) * Number(i.jumlah))}
                           </span>
+                          {memberCount > 1 && (
+                            <span className="inline-flex items-center gap-0.5 rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                              {i.user_id === userId
+                                ? "oleh Anda"
+                                : `oleh ${namaAnggota.get(i.user_id) ?? "anggota"}`}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
@@ -367,14 +378,19 @@ function BelanjaPage() {
                           <Sparkles className="h-4 w-4 text-primary" />
                         )}
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive"
-                        onClick={() => deleteItem(i.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {(i.user_id === userId || isKepala) && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive"
+                          onClick={() => deleteItem(i.id)}
+                          title={
+                            i.user_id === userId ? "Hapus item" : "Batalkan item anggota (kepala)"
+                          }
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </li>
                   ))}
                 </ul>

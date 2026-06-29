@@ -3,7 +3,8 @@ import { useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, logActivity } from "@/lib/useAuth";
-import { bulanIni, formatRupiah } from "@/lib/format";
+import { formatRupiah } from "@/lib/format";
+import { usePeriode } from "@/lib/periode";
 import { getOrCreateBelanja, BelanjaItemRow } from "@/lib/belanja";
 import { compressImageToBase64 } from "@/lib/image";
 import { scanStrukAI, StrukResult } from "@/lib/api/scan-struk.functions";
@@ -76,7 +77,7 @@ function ScanStrukPage() {
   const { userId } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { bulan, tahun } = bulanIni();
+  const { bulan, tahun } = usePeriode();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [phase, setPhase] = useState<"upload" | "loading" | "review">("upload");

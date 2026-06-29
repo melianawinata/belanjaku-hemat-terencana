@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { bulanIni, formatRupiah, formatTanggal, namaBulan } from "@/lib/format";
 import { totalEstimasi, totalRealisasi, BelanjaItemRow } from "@/lib/belanja";
+import { getKeluargaId } from "@/lib/keluarga";
 import { getPengeluaranLain, getPengeluaranRutin, totalPengeluaran } from "@/lib/pengeluaran";
 import { getMySubscription } from "@/lib/api/subscription.functions";
 import { PageHeader } from "@/components/app-shell";
@@ -110,10 +111,11 @@ function Dashboard() {
     queryKey: ["dashboard", userId, bulan, tahun],
     enabled: !!userId,
     queryFn: async () => {
+      const keluargaId = await getKeluargaId(userId!);
       const { data: belanja } = await supabase
         .from("belanja_bulanan")
         .select("*")
-        .eq("user_id", userId!)
+        .eq("keluarga_id", keluargaId)
         .eq("bulan", bulan)
         .eq("tahun", tahun)
         .maybeSingle();
@@ -134,7 +136,7 @@ function Dashboard() {
       const { data: allBelanja } = await supabase
         .from("belanja_bulanan")
         .select("*")
-        .eq("user_id", userId!)
+        .eq("keluarga_id", keluargaId)
         .order("tahun")
         .order("bulan");
       const { data: histori } = await supabase

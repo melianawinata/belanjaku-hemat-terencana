@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { getPengeluaranLain, totalPengeluaran } from "@/lib/pengeluaran";
+import { getKeluargaId } from "@/lib/keluarga";
 import { formatRupiah, labelBulanTahun } from "@/lib/format";
 import { PageHeader } from "@/components/app-shell";
 import { EmptyState, Skeleton } from "@/components/belanja-ui";
@@ -26,8 +27,9 @@ function HistoryPage() {
     queryKey: ["history", userId],
     enabled: !!userId,
     queryFn: async () => {
+      const keluargaId = await getKeluargaId(userId!);
       const { data: belanja } = await supabase.from("belanja_bulanan").select("*")
-        .eq("user_id", userId!).order("tahun", { ascending: false }).order("bulan", { ascending: false });
+        .eq("keluarga_id", keluargaId).order("tahun", { ascending: false }).order("bulan", { ascending: false });
       const result = [];
       for (const b of belanja ?? []) {
         const { data: items } = await supabase.from("belanja_item").select("harga_aktual, sudah_dibeli").eq("belanja_id", b.id);

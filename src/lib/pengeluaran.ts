@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getKeluargaId } from "@/lib/keluarga";
 
 export interface KategoriPengeluaranRow {
   id: string;
@@ -10,6 +11,7 @@ export interface KategoriPengeluaranRow {
 export interface PengeluaranLainRow {
   id: string;
   user_id: string;
+  keluarga_id: string;
   tanggal: string; // YYYY-MM-DD
   kategori_pengeluaran_id: string | null;
   deskripsi: string;
@@ -22,6 +24,7 @@ export interface PengeluaranLainRow {
 export interface PengeluaranRutinRow {
   id: string;
   user_id: string;
+  keluarga_id: string;
   kategori_pengeluaran_id: string | null;
   deskripsi: string;
   nominal: number;
@@ -57,11 +60,12 @@ export async function getKategoriPengeluaran(): Promise<KategoriPengeluaranRow[]
 }
 
 export async function getPengeluaranLain(userId: string, bulan: number, tahun: number): Promise<PengeluaranLainRow[]> {
+  const keluargaId = await getKeluargaId(userId);
   const { mulai, akhir } = rentangBulan(bulan, tahun);
   const { data } = await supabase
     .from("pengeluaran_lain")
     .select("*")
-    .eq("user_id", userId)
+    .eq("keluarga_id", keluargaId)
     .gte("tanggal", mulai)
     .lte("tanggal", akhir)
     .order("tanggal", { ascending: false })
@@ -84,10 +88,11 @@ export function pengeluaranPerKategori(rows: PengeluaranLainRow[]): Map<string, 
 }
 
 export async function getPengeluaranRutin(userId: string): Promise<PengeluaranRutinRow[]> {
+  const keluargaId = await getKeluargaId(userId);
   const { data } = await supabase
     .from("pengeluaran_rutin")
     .select("*")
-    .eq("user_id", userId)
+    .eq("keluarga_id", keluargaId)
     .order("created_at");
   return (data ?? []) as PengeluaranRutinRow[];
 }
@@ -98,6 +103,7 @@ export async function getPengeluaranRutin(userId: string): Promise<PengeluaranRu
  * Mengembalikan jumlah entri yang baru dibuat.
  */
 export async function generateRutinBulanIni(userId: string, bulan: number, tahun: number): Promise<number> {
+  const keluargaId = await getKeluargaId(userId);
   const rutin = (await getPengeluaranRutin(userId)).filter((r) => r.aktif);
   if (rutin.length === 0) return 0;
 
@@ -105,7 +111,7 @@ export async function generateRutinBulanIni(userId: string, bulan: number, tahun
   const { data: existing } = await supabase
     .from("pengeluaran_lain")
     .select("rutin_id")
-    .eq("user_id", userId)
+    .eq("keluarga_id", keluargaId)
     .gte("tanggal", mulai)
     .lte("tanggal", akhir)
     .not("rutin_id", "is", null);
@@ -116,6 +122,7 @@ export async function generateRutinBulanIni(userId: string, bulan: number, tahun
     .filter((r) => !sudahAda.has(r.id))
     .map((r) => ({
       user_id: userId,
+      keluarga_id: keluargaId,
       tanggal: `${tahun}-${mm}-${String(r.tanggal_hari).padStart(2, "0")}`,
       kategori_pengeluaran_id: r.kategori_pengeluaran_id,
       deskripsi: r.deskripsi,
@@ -134,6 +141,7 @@ export interface TrenBulan { label: string; budget: number; terpakai: number }
 
 /** Tren pengeluaran lain (budget_lain vs terpakai) untuk `jumlahBulan` bulan terakhir s/d bulan ini. */
 export async function getTrenPengeluaran(userId: string, bulan: number, tahun: number, jumlahBulan = 6): Promise<TrenBulan[]> {
+  const keluargaId = await getKeluargaId(userId);
   // Daftar bulan target, dari yang terlama ke bulan ini.
   const target: { bulan: number; tahun: number }[] = [];
   let b = bulan, t = tahun;
@@ -147,9 +155,9 @@ export async function getTrenPengeluaran(userId: string, bulan: number, tahun: n
 
   const { data: rows } = await supabase
     .from("pengeluaran_lain").select("tanggal, nominal")
-    .eq("user_id", userId).gte("tanggal", mulai).lte("tanggal", akhir);
+    .eq("keluarga_id", keluargaId).gte("tanggal", mulai).lte("tanggal", akhir);
   const { data: belanja } = await supabase
-    .from("belanja_bulanan").select("bulan, tahun, budget_lain").eq("user_id", userId);
+    .from("belanja_bulanan").select("bulan, tahun, budget_lain").eq("keluarga_id", keluargaId);
 
   const NAMA = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
   const budgetMap = new Map((belanja ?? []).map((x) => [`${x.tahun}-${x.bulan}`, Number(x.budget_lain)]));

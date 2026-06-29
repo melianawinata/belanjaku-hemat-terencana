@@ -1,8 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getKeluargaId } from "@/lib/keluarga";
 
 export interface BelanjaItemRow {
   id: string;
   belanja_id: string;
+  user_id: string;
   item_id: string | null;
   nama_snapshot: string;
   merk: string | null;
@@ -21,6 +23,7 @@ export interface BelanjaItemRow {
 export interface BelanjaBulananRow {
   id: string;
   user_id: string;
+  keluarga_id: string;
   bulan: number;
   tahun: number;
   budget: number;
@@ -54,24 +57,29 @@ export async function getEstimasiHarga(
   return 0;
 }
 
-/** Get or create the belanja_bulanan record for the given month. */
+/**
+ * Get or create the belanja_bulanan record for the given month.
+ * Belanja dimiliki per-KELUARGA: dicari & dibuat berdasarkan keluarga_id user,
+ * sehingga seluruh anggota berbagi daftar & budget yang sama.
+ */
 export async function getOrCreateBelanja(
   userId: string,
   bulan: number,
   tahun: number,
   budget = 0,
 ): Promise<BelanjaBulananRow> {
+  const keluargaId = await getKeluargaId(userId);
   const { data: existing } = await supabase
     .from("belanja_bulanan")
     .select("*")
-    .eq("user_id", userId)
+    .eq("keluarga_id", keluargaId)
     .eq("bulan", bulan)
     .eq("tahun", tahun)
     .maybeSingle();
   if (existing) return existing as BelanjaBulananRow;
   const { data: created, error } = await supabase
     .from("belanja_bulanan")
-    .insert({ user_id: userId, bulan, tahun, budget, status: "draft" })
+    .insert({ user_id: userId, keluarga_id: keluargaId, bulan, tahun, budget, status: "draft" })
     .select("*")
     .single();
   if (error) throw error;

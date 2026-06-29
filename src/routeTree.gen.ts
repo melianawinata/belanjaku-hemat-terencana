@@ -25,6 +25,7 @@ import { Route as AuthenticatedAppScanStrukRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppProfilRouteImport } from './routes/_authenticated/app.profil'
 import { Route as AuthenticatedAppPengeluaranRouteImport } from './routes/_authenticated/app.pengeluaran'
 import { Route as AuthenticatedAppMulaiBelanjaRouteImport } from './routes/_authenticated/app.mulai-belanja'
+import { Route as AuthenticatedAppKeluargaRouteImport } from './routes/_authenticated/app.keluarga'
 import { Route as AuthenticatedAppGenerateRouteImport } from './routes/_authenticated/app.generate'
 import { Route as AuthenticatedAppFavoritRouteImport } from './routes/_authenticated/app.favorit'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
@@ -126,6 +127,12 @@ const AuthenticatedAppMulaiBelanjaRoute =
   AuthenticatedAppMulaiBelanjaRouteImport.update({
     id: '/mulai-belanja',
     path: '/mulai-belanja',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppKeluargaRoute =
+  AuthenticatedAppKeluargaRouteImport.update({
+    id: '/keluarga',
+    path: '/keluarga',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppGenerateRoute =
@@ -259,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/favorit': typeof AuthenticatedAppFavoritRoute
   '/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/app/keluarga': typeof AuthenticatedAppKeluargaRoute
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/pengeluaran': typeof AuthenticatedAppPengeluaranRoute
   '/app/profil': typeof AuthenticatedAppProfilRoute
@@ -293,6 +301,7 @@ export interface FileRoutesByTo {
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/favorit': typeof AuthenticatedAppFavoritRoute
   '/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/app/keluarga': typeof AuthenticatedAppKeluargaRoute
   '/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/app/pengeluaran': typeof AuthenticatedAppPengeluaranRoute
   '/app/profil': typeof AuthenticatedAppProfilRoute
@@ -331,6 +340,7 @@ export interface FileRoutesById {
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/app/favorit': typeof AuthenticatedAppFavoritRoute
   '/_authenticated/app/generate': typeof AuthenticatedAppGenerateRoute
+  '/_authenticated/app/keluarga': typeof AuthenticatedAppKeluargaRoute
   '/_authenticated/app/mulai-belanja': typeof AuthenticatedAppMulaiBelanjaRoute
   '/_authenticated/app/pengeluaran': typeof AuthenticatedAppPengeluaranRoute
   '/_authenticated/app/profil': typeof AuthenticatedAppProfilRoute
@@ -369,6 +379,7 @@ export interface FileRouteTypes {
     | '/app/dashboard'
     | '/app/favorit'
     | '/app/generate'
+    | '/app/keluarga'
     | '/app/mulai-belanja'
     | '/app/pengeluaran'
     | '/app/profil'
@@ -403,6 +414,7 @@ export interface FileRouteTypes {
     | '/app/dashboard'
     | '/app/favorit'
     | '/app/generate'
+    | '/app/keluarga'
     | '/app/mulai-belanja'
     | '/app/pengeluaran'
     | '/app/profil'
@@ -440,6 +452,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/dashboard'
     | '/_authenticated/app/favorit'
     | '/_authenticated/app/generate'
+    | '/_authenticated/app/keluarga'
     | '/_authenticated/app/mulai-belanja'
     | '/_authenticated/app/pengeluaran'
     | '/_authenticated/app/profil'
@@ -575,6 +588,13 @@ declare module '@tanstack/react-router' {
       path: '/mulai-belanja'
       fullPath: '/app/mulai-belanja'
       preLoaderRoute: typeof AuthenticatedAppMulaiBelanjaRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/keluarga': {
+      id: '/_authenticated/app/keluarga'
+      path: '/keluarga'
+      fullPath: '/app/keluarga'
+      preLoaderRoute: typeof AuthenticatedAppKeluargaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/generate': {
@@ -749,6 +769,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
   AuthenticatedAppFavoritRoute: typeof AuthenticatedAppFavoritRoute
   AuthenticatedAppGenerateRoute: typeof AuthenticatedAppGenerateRoute
+  AuthenticatedAppKeluargaRoute: typeof AuthenticatedAppKeluargaRoute
   AuthenticatedAppMulaiBelanjaRoute: typeof AuthenticatedAppMulaiBelanjaRoute
   AuthenticatedAppPengeluaranRoute: typeof AuthenticatedAppPengeluaranRoute
   AuthenticatedAppProfilRoute: typeof AuthenticatedAppProfilRoute
@@ -768,6 +789,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
   AuthenticatedAppFavoritRoute: AuthenticatedAppFavoritRoute,
   AuthenticatedAppGenerateRoute: AuthenticatedAppGenerateRoute,
+  AuthenticatedAppKeluargaRoute: AuthenticatedAppKeluargaRoute,
   AuthenticatedAppMulaiBelanjaRoute: AuthenticatedAppMulaiBelanjaRoute,
   AuthenticatedAppPengeluaranRoute: AuthenticatedAppPengeluaranRoute,
   AuthenticatedAppProfilRoute: AuthenticatedAppProfilRoute,

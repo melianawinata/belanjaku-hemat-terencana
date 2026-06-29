@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
-import { bulanIni, bulanSebelumnya, namaBulan } from "@/lib/format";
+import { bulanSebelumnya, namaBulan } from "@/lib/format";
+import { usePeriode } from "@/lib/periode";
 import { getOrCreateBelanja, getEstimasiHarga } from "@/lib/belanja";
+import { getKeluargaId } from "@/lib/keluarga";
 import { PageHeader } from "@/components/app-shell";
 import { EmptyState, Skeleton } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
@@ -29,7 +31,7 @@ function GeneratePage() {
   const { mode } = Route.useSearch();
   const { userId, profile } = useAuth();
   const navigate = useNavigate();
-  const { bulan, tahun } = bulanIni();
+  const { bulan, tahun } = usePeriode();
   const [rows, setRows] = useState<Row[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -39,8 +41,9 @@ function GeneratePage() {
     queryFn: async () => {
       if (mode === "bulan-lalu") {
         const prev = bulanSebelumnya(bulan, tahun);
+        const keluargaId = await getKeluargaId(userId!);
         const { data: pb } = await supabase.from("belanja_bulanan").select("id")
-          .eq("user_id", userId!).eq("bulan", prev.bulan).eq("tahun", prev.tahun).maybeSingle();
+          .eq("keluarga_id", keluargaId).eq("bulan", prev.bulan).eq("tahun", prev.tahun).maybeSingle();
         if (!pb) return [] as Row[];
         const { data: items } = await supabase.from("belanja_item")
           .select("item_id, nama_snapshot, merk, kategori_barang_id, jumlah, satuan").eq("belanja_id", pb.id);

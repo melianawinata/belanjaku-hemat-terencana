@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
-import { bulanIni, bulanSebelumnya, formatRupiah, namaBulan } from "@/lib/format";
+import { bulanSebelumnya, formatRupiah, namaBulan } from "@/lib/format";
+import { usePeriode } from "@/lib/periode";
 import { getOrCreateBelanja } from "@/lib/belanja";
 import { getPengeluaranLain, totalPengeluaran } from "@/lib/pengeluaran";
+import { useKeluarga } from "@/lib/useKeluarga";
 import { PageHeader } from "@/components/app-shell";
 import { StatCard, BudgetBar, Skeleton } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
@@ -22,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/app/budget")({
 });
 
 function BudgetPage() {
-  const { bulan, tahun } = bulanIni();
+  const { bulan, tahun } = usePeriode();
   return (
     <>
       <PageHeader title="Budget Bulanan" subtitle={`Atur anggaran ${namaBulan(bulan)} ${tahun}`} />
@@ -40,7 +42,8 @@ function BudgetPage() {
 
 function BelanjaBudgetTab() {
   const { userId } = useAuth();
-  const { bulan, tahun } = bulanIni();
+  const { bulan, tahun } = usePeriode();
+  const { isKepala } = useKeluarga();
   const [budgetInput, setBudgetInput] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -53,7 +56,7 @@ function BelanjaBudgetTab() {
       const estimasi = (items ?? []).reduce((s, i) => s + Number(i.estimasi_harga) * Number(i.jumlah), 0);
       const realisasi = (items ?? []).filter((i) => i.sudah_dibeli && i.harga_aktual != null).reduce((s, i) => s + Number(i.harga_aktual), 0);
 
-      const { data: all } = await supabase.from("belanja_bulanan").select("*").eq("user_id", userId!).order("tahun").order("bulan");
+      const { data: all } = await supabase.from("belanja_bulanan").select("*").eq("keluarga_id", belanja.keluarga_id).order("tahun").order("bulan");
       const chart = [];
       for (const b of all ?? []) {
         const { data: bi } = await supabase.from("belanja_item").select("harga_aktual, sudah_dibeli").eq("belanja_id", b.id);
@@ -81,7 +84,9 @@ function BelanjaBudgetTab() {
   const salinBulanLalu = async () => {
     if (!userId) return;
     const prev = bulanSebelumnya(bulan, tahun);
-    const { data: pb } = await supabase.from("belanja_bulanan").select("budget").eq("user_id", userId).eq("bulan", prev.bulan).eq("tahun", prev.tahun).maybeSingle();
+    const keluargaId = data?.belanja?.keluarga_id;
+    if (!keluargaId) return;
+    const { data: pb } = await supabase.from("belanja_bulanan").select("budget").eq("keluarga_id", keluargaId).eq("bulan", prev.bulan).eq("tahun", prev.tahun).maybeSingle();
     if (!pb) { toast.error("Belum ada budget bulan lalu."); return; }
     setBudgetInput(String(pb.budget));
     toast.success("Budget bulan lalu disalin. Jangan lupa simpan.");
@@ -93,11 +98,17 @@ function BelanjaBudgetTab() {
     <div className="space-y-5">
       <div className="rounded-2xl border bg-card p-5 shadow-sm">
         <Label htmlFor="budget">Budget belanja bulan ini (Rp)</Label>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Input id="budget" type="number" value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="max-w-xs" placeholder="Contoh: 1500000" />
-          <Button onClick={simpan} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Simpan</Button>
-          <Button variant="outline" onClick={salinBulanLalu}><Copy className="mr-2 h-4 w-4" /> Salin Bulan Lalu</Button>
-        </div>
+        {isKepala ? (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Input id="budget" type="number" value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="max-w-xs" placeholder="Contoh: 1500000" />
+            <Button onClick={simpan} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Simpan</Button>
+            <Button variant="outline" onClick={salinBulanLalu}><Copy className="mr-2 h-4 w-4" /> Salin Bulan Lalu</Button>
+          </div>
+        ) : (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Budget keluarga: <span className="font-semibold text-foreground">{formatRupiah(budget)}</span>. Hanya kepala keluarga yang bisa mengubahnya.
+          </p>
+        )}
         <div className="mt-5"><BudgetBar pemakaian={pemakaian} budget={budget} /></div>
       </div>
 
@@ -130,7 +141,8 @@ function BelanjaBudgetTab() {
  */
 function PengeluaranLainBudgetTab() {
   const { userId } = useAuth();
-  const { bulan, tahun } = bulanIni();
+  const { bulan, tahun } = usePeriode();
+  const { isKepala } = useKeluarga();
   const [budgetInput, setBudgetInput] = useState("");
   const [savingBudget, setSavingBudget] = useState(false);
 
@@ -168,10 +180,16 @@ function PengeluaranLainBudgetTab() {
       <div className="rounded-2xl border bg-card p-5 shadow-sm">
         <Label htmlFor="budget-lain">Budget pengeluaran lain bulan ini (Rp)</Label>
         <p className="mt-1 text-xs text-muted-foreground">Plafon terpisah dari budget belanja — untuk makan luar, jajan online, transportasi, dll.</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Input id="budget-lain" type="number" value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="max-w-xs" placeholder="Contoh: 800000" />
-          <Button onClick={simpanBudget} disabled={savingBudget}>{savingBudget && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Simpan</Button>
-        </div>
+        {isKepala ? (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Input id="budget-lain" type="number" value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="max-w-xs" placeholder="Contoh: 800000" />
+            <Button onClick={simpanBudget} disabled={savingBudget}>{savingBudget && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Simpan</Button>
+          </div>
+        ) : (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Plafon keluarga: <span className="font-semibold text-foreground">{formatRupiah(budgetLain)}</span>. Hanya kepala keluarga yang bisa mengubahnya.
+          </p>
+        )}
         <div className="mt-5"><BudgetBar pemakaian={total} budget={budgetLain} /></div>
       </div>
 

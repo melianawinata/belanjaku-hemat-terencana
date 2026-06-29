@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, logActivity } from "@/lib/useAuth";
-import { bulanIni, formatRupiah, namaBulan } from "@/lib/format";
+import { formatRupiah, namaBulan } from "@/lib/format";
+import { usePeriode } from "@/lib/periode";
 import { getOrCreateBelanja, totalRealisasi, BelanjaItemRow } from "@/lib/belanja";
 import { PageHeader } from "@/components/app-shell";
 import { StatCard, Skeleton } from "@/components/belanja-ui";
@@ -20,7 +21,7 @@ function SelesaiPage() {
   const { userId } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { bulan, tahun } = bulanIni();
+  const { bulan, tahun } = usePeriode();
   const [saving, setSaving] = useState(false);
 
   const { data, isLoading } = useQuery({

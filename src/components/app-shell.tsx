@@ -3,10 +3,11 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
-import { bulanIni, labelBulanTahun } from "@/lib/format";
+import { usePeriode } from "@/lib/periode";
+import { bulanIni, bulanBerikutnya, labelBulanTahun } from "@/lib/format";
 import {
   LayoutDashboard, ShoppingCart, History, Wallet, Heart, User, Receipt,
-  ShoppingBasket, LogOut, Shield,
+  ShoppingBasket, LogOut, Shield, CalendarClock, Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -18,6 +19,7 @@ const NAV = [
   { to: "/app/history", label: "History", short: "History", icon: History },
   { to: "/app/budget", label: "Budget", short: "Budget", icon: Wallet },
   { to: "/app/favorit", label: "Favorit", short: "Favorit", icon: Heart },
+  { to: "/app/keluarga", label: "Keluarga", short: "Keluarga", icon: Users },
   { to: "/app/profil", label: "Profil", short: "Profil", icon: User },
 ] as const;
 
@@ -26,7 +28,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const { profile, isAdmin } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { bulan, tahun } = bulanIni();
 
   const signOut = async () => {
     await queryClient.cancelQueries();
@@ -74,7 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="lg:pl-60">
         <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/80 px-4 py-3 backdrop-blur sm:px-6">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{labelBulanTahun(bulan, tahun)}</p>
+            <PeriodeSelector />
             <p className="text-sm font-semibold">Halo, {profile?.nama?.split(" ")[0] || "Sahabat"} 👋</p>
           </div>
           <div className="flex items-center gap-2">
@@ -89,11 +90,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
           </div>
         </header>
+        <PeriodeBanner />
         <main className="px-4 pb-24 pt-5 sm:px-6 lg:pb-10">{children}</main>
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-7 border-t bg-background lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-8 border-t bg-background lg:hidden">
         {NAV.map((n) => (
           <Link key={n.to} to={n.to}
             className={`flex flex-col items-center gap-0.5 py-2 text-[9px] ${
@@ -103,6 +105,56 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
         ))}
       </nav>
+    </div>
+  );
+}
+
+// Pemilih periode aktif: bulan ini ↔ bulan depan. Toggle 2 tombol agar langsung
+// terlihat — memungkinkan user menyiapkan belanja untuk bulan berikutnya
+// (mis. setelah gajian akhir bulan).
+function PeriodeSelector() {
+  const { isBulanDepan, setPeriode } = usePeriode();
+  const ini = bulanIni();
+  const depan = bulanBerikutnya(ini.bulan, ini.tahun);
+  const opsi = [
+    { label: "Bulan ini", periode: ini, aktif: !isBulanDepan },
+    { label: "Bulan depan", periode: depan, aktif: isBulanDepan },
+  ];
+
+  return (
+    <div className="mb-1 inline-flex rounded-lg border bg-muted/50 p-0.5" role="group" aria-label="Periode belanja">
+      {opsi.map((o) => (
+        <button
+          key={o.label}
+          onClick={() => setPeriode(o.periode)}
+          aria-pressed={o.aktif}
+          className={`flex flex-col items-start rounded-md px-2.5 py-0.5 text-left transition-colors ${
+            o.aktif ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+          }`}>
+          <span className="text-[11px] font-semibold leading-tight">{o.label}</span>
+          <span className="font-mono text-[9px] uppercase tracking-wider leading-tight opacity-70">
+            {labelBulanTahun(o.periode.bulan, o.periode.tahun)}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Banner mencolok saat periode aktif bukan bulan berjalan, agar tak ada salah
+// input belanja ke periode yang keliru.
+function PeriodeBanner() {
+  const { bulan, tahun, isBulanDepan, setPeriode } = usePeriode();
+  if (!isBulanDepan) return null;
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-warning/30 bg-warning/10 px-4 py-2 text-sm sm:px-6">
+      <span className="flex items-center gap-2 text-foreground">
+        <CalendarClock className="h-4 w-4 text-warning" />
+        Menyiapkan belanja untuk <strong>{labelBulanTahun(bulan, tahun)}</strong> (bulan depan)
+      </span>
+      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setPeriode(bulanIni())}>
+        Kembali ke bulan ini
+      </Button>
     </div>
   );
 }
