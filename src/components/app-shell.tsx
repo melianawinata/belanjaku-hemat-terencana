@@ -7,7 +7,7 @@ import { usePeriode } from "@/lib/periode";
 import { bulanIni, bulanBerikutnya, labelBulanTahun } from "@/lib/format";
 import {
   LayoutDashboard, ShoppingCart, History, Wallet, Heart, User, Receipt,
-  ShoppingBasket, LogOut, Shield, CalendarClock, Users,
+  ShoppingBasket, LogOut, Shield, CalendarClock, Users, UtensilsCrossed,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 const NAV = [
   { to: "/app/dashboard", label: "Dashboard", short: "Home", icon: LayoutDashboard },
   { to: "/app/belanja", label: "Belanja Bulanan", short: "Belanja", icon: ShoppingCart },
+  { to: "/app/menu", label: "Menu Makan", short: "Menu", icon: UtensilsCrossed },
   { to: "/app/pengeluaran", label: "Pengeluaran Lain", short: "Lainnya", icon: Receipt },
   { to: "/app/history", label: "History", short: "History", icon: History },
   { to: "/app/budget", label: "Budget", short: "Budget", icon: Wallet },
@@ -94,11 +95,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main className="px-4 pb-24 pt-5 sm:px-6 lg:pb-10">{children}</main>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-8 border-t bg-background lg:hidden">
+      {/* Mobile bottom nav — scrollable agar muat banyak menu */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex overflow-x-auto border-t bg-background lg:hidden">
         {NAV.map((n) => (
           <Link key={n.to} to={n.to}
-            className={`flex flex-col items-center gap-0.5 py-2 text-[9px] ${
+            className={`flex min-w-[3.5rem] flex-1 shrink-0 flex-col items-center gap-0.5 py-2 text-[9px] ${
               isActive(n.to) ? "text-primary" : "text-muted-foreground"
             }`}>
             <n.icon className="h-5 w-5" /> {n.short}

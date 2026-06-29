@@ -457,6 +457,112 @@ export type Database = {
           },
         ];
       };
+      menu_komponen: {
+        Row: {
+          created_at: string;
+          id: string;
+          item_id: string | null;
+          jumlah: number;
+          kategori_barang_id: string | null;
+          kategori_pengeluaran_id: string | null;
+          menu_id: string;
+          nama: string;
+          perkiraan_biaya: number;
+          satuan: string;
+          tipe: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          item_id?: string | null;
+          jumlah?: number;
+          kategori_barang_id?: string | null;
+          kategori_pengeluaran_id?: string | null;
+          menu_id: string;
+          nama: string;
+          perkiraan_biaya?: number;
+          satuan?: string;
+          tipe?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          item_id?: string | null;
+          jumlah?: number;
+          kategori_barang_id?: string | null;
+          kategori_pengeluaran_id?: string | null;
+          menu_id?: string;
+          nama?: string;
+          perkiraan_biaya?: number;
+          satuan?: string;
+          tipe?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "menu_komponen_item_id_fkey";
+            columns: ["item_id"];
+            isOneToOne: false;
+            referencedRelation: "item";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "menu_komponen_kategori_barang_id_fkey";
+            columns: ["kategori_barang_id"];
+            isOneToOne: false;
+            referencedRelation: "kategori_barang";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "menu_komponen_kategori_pengeluaran_id_fkey";
+            columns: ["kategori_pengeluaran_id"];
+            isOneToOne: false;
+            referencedRelation: "kategori_pengeluaran";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "menu_komponen_menu_id_fkey";
+            columns: ["menu_id"];
+            isOneToOne: false;
+            referencedRelation: "menu_masakan";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      menu_masakan: {
+        Row: {
+          catatan: string | null;
+          created_at: string;
+          id: string;
+          keluarga_id: string;
+          nama: string;
+          user_id: string;
+        };
+        Insert: {
+          catatan?: string | null;
+          created_at?: string;
+          id?: string;
+          keluarga_id: string;
+          nama: string;
+          user_id: string;
+        };
+        Update: {
+          catatan?: string | null;
+          created_at?: string;
+          id?: string;
+          keluarga_id?: string;
+          nama?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "menu_masakan_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       payment_transactions: {
         Row: {
           created_at: string;
@@ -668,6 +774,57 @@ export type Database = {
             columns: ["kategori_user_id"];
             isOneToOne: false;
             referencedRelation: "kategori_user";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      rencana_makan: {
+        Row: {
+          created_at: string;
+          dibelanjakan_at: string | null;
+          id: string;
+          keluarga_id: string;
+          menu_id: string;
+          porsi: number;
+          slot: string;
+          tanggal: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          dibelanjakan_at?: string | null;
+          id?: string;
+          keluarga_id: string;
+          menu_id: string;
+          porsi?: number;
+          slot: string;
+          tanggal: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          dibelanjakan_at?: string | null;
+          id?: string;
+          keluarga_id?: string;
+          menu_id?: string;
+          porsi?: number;
+          slot?: string;
+          tanggal?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "rencana_makan_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rencana_makan_menu_id_fkey";
+            columns: ["menu_id"];
+            isOneToOne: false;
+            referencedRelation: "menu_masakan";
             referencedColumns: ["id"];
           },
         ];

@@ -20,6 +20,10 @@ export function useKeluarga() {
     isKepala: detail?.is_kepala ?? false,
     memberCount: detail?.member_count ?? 1,
     canInvite: detail?.can_invite ?? false,
+    // Paket aktif kepala keluarga; null = belum berlangganan.
+    kepalaPlan: detail?.kepala_plan ?? null,
+    // Akses fitur berbayar keluarga (mis. menu makan): kepala berlangganan paket apa pun.
+    berlangganan: (detail?.kepala_plan ?? null) !== null,
     loading: q.isLoading,
     refetch: q.refetch,
   };
