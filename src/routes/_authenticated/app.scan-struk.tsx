@@ -190,10 +190,14 @@ function ScanStrukPage() {
     try {
       const now = new Date().toISOString();
       const ops = includedRows.map((r) => {
+        // Nama mentah dari struk = varian/merk persis yang dibeli (mis. item rencana
+        // "Mie Instan" → struk "INDOMIE GORENG SPESIAL"). Simpan ke Merk/Varian.
+        const merkStruk = r.nama_struk.trim() || null;
         if (r.mode === "match" && r.matchId) {
           return supabase
             .from("belanja_item")
             .update({
+              merk: merkStruk,
               harga_aktual: r.harga_total,
               harga_sumber: "scan",
               sudah_dibeli: true,
@@ -208,7 +212,8 @@ function ScanStrukPage() {
           user_id: userId!,
           item_id: r.linkItemId,
           nama_snapshot: r.linkNama,
-          merk: null,
+          // Hindari duplikasi bila nama item == nama struk (tak ada normalisasi).
+          merk: merkStruk && merkStruk !== r.linkNama.trim() ? merkStruk : null,
           kategori_barang_id: r.linkKategoriId,
           jumlah: r.qty,
           satuan: r.linkSatuan,

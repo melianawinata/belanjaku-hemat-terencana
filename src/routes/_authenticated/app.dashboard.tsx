@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
-import { bulanIni, formatRupiah, formatTanggal, namaBulan } from "@/lib/format";
+import { formatRupiah, formatTanggal, namaBulan } from "@/lib/format";
+import { usePeriode } from "@/lib/periode";
 import { totalEstimasi, totalRealisasi, BelanjaItemRow } from "@/lib/belanja";
 import { getKeluargaId } from "@/lib/keluarga";
 import { getPengeluaranLain, getPengeluaranRutin, totalPengeluaran } from "@/lib/pengeluaran";
@@ -105,7 +106,9 @@ function LanggananCard() {
 
 function Dashboard() {
   const { userId } = useAuth();
-  const { bulan, tahun } = bulanIni();
+  // Dashboard mengikuti periode aktif (Bulan Ini / Bulan Depan) dari selektor header,
+  // konsisten dengan halaman operasional lainnya.
+  const { bulan, tahun, isBulanDepan } = usePeriode();
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard", userId, bulan, tahun],
@@ -286,6 +289,13 @@ function Dashboard() {
         }
       />
 
+      {isBulanDepan ? (
+        <div className="mb-4 rounded-xl border border-info/30 bg-info/10 p-3 text-sm text-info">
+          Menampilkan pratinjau <strong>{namaBulan(bulan)} {tahun}</strong> sesuai periode yang
+          dipilih. Ganti ke "Bulan Ini" di kiri atas untuk melihat bulan berjalan.
+        </div>
+      ) : null}
+
       <div className="mb-6">
         <LanggananCard />
       </div>
@@ -293,7 +303,7 @@ function Dashboard() {
       {items.length === 0 && budget === 0 && budgetLain === 0 && pengeluaranLainTotal === 0 ? (
         <EmptyState
           icon={<ShoppingCart className="h-7 w-7" />}
-          title="Belum ada aktivitas bulan ini"
+          title={`Belum ada aktivitas ${namaBulan(bulan)} ${tahun}`}
           desc="Yuk atur budget dan susun daftar belanja bulananmu agar pengeluaran lebih terkontrol."
           action={
             <Link to="/app/belanja">
@@ -306,7 +316,7 @@ function Dashboard() {
           {/* Ringkasan */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
-              label="Budget Bulan Ini"
+              label={`Budget ${namaBulan(bulan)}`}
               value={formatRupiah(totalBudget)}
               hint={`Belanja ${formatRupiah(budget)} · Lain ${formatRupiah(budgetLain)}`}
               icon={<Wallet className="h-4 w-4 text-muted-foreground" />}
@@ -357,7 +367,7 @@ function Dashboard() {
 
           {/* Statistik */}
           <div className="grid gap-4 sm:grid-cols-3">
-            <StatCard label="Item Bulan Ini" value={items.length} />
+            <StatCard label={`Item ${namaBulan(bulan)}`} value={items.length} />
             <StatCard label="Sudah Dibeli" value={dibeli} tone="success" />
             <StatCard label="Belum Dibeli" value={belum} tone="warning" />
           </div>
