@@ -40,6 +40,7 @@ export interface RencanaMakanRow {
   menu_id: string;
   porsi: number;
   dibelanjakan_at: string | null;
+  dimasak_at: string | null;
 }
 
 // ---- Tanggal util (minggu Senin–Minggu, lokal) --------------------------
@@ -122,12 +123,25 @@ export async function getRencana(
   const keluargaId = await getKeluargaId(userId);
   const { data } = await supabase
     .from("rencana_makan")
-    .select("id, tanggal, slot, menu_id, porsi, dibelanjakan_at")
+    .select("id, tanggal, slot, menu_id, porsi, dibelanjakan_at, dimasak_at")
     .eq("keluarga_id", keluargaId)
     .gte("tanggal", startISO)
     .lte("tanggal", endISO)
     .order("tanggal");
   return (data ?? []) as RencanaMakanRow[];
+}
+
+/**
+ * Tandai rencana sudah/belum dimasak. Saat ditandai dimasak, trigger DB
+ * mengurangi stok bahan (menu_komponen 'belanja' × porsi); dibatalkan -> stok
+ * dikembalikan.
+ */
+export async function setDimasak(id: string, dimasak: boolean): Promise<void> {
+  const { error } = await supabase
+    .from("rencana_makan")
+    .update({ dimasak_at: dimasak ? new Date().toISOString() : null })
+    .eq("id", id);
+  if (error) throw error;
 }
 
 export async function addRencana(

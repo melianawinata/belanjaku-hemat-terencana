@@ -14,6 +14,15 @@ import {
   BelanjaItemRow,
 } from "@/lib/belanja";
 import { estimasiHargaAI } from "@/lib/api/estimasi-harga.functions";
+import { SatuanField } from "@/components/satuan-konversi";
+import {
+  getStokList,
+  stokRendah,
+  saranJumlah,
+  tambahKeBelanja,
+  itemKey,
+  type StokBarangRow,
+} from "@/lib/stok";
 import { PageHeader } from "@/components/app-shell";
 import { EmptyState, Skeleton, DraftInput } from "@/components/belanja-ui";
 import { Button } from "@/components/ui/button";
@@ -59,6 +68,7 @@ import {
   Check,
   ChevronsUpDown,
   Sparkles,
+  Boxes,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/belanja")({
@@ -86,6 +96,7 @@ function BelanjaPage() {
         .from("belanja_item")
         .select("*")
         .eq("belanja_id", belanja.id)
+        .eq("tambahan", false)
         .order("created_at");
       const { data: kat } = await supabase.from("kategori_barang").select("id, nama");
       return { belanja, items: (items ?? []) as BelanjaItemRow[], kategori: kat ?? [] };
@@ -243,6 +254,10 @@ function BelanjaPage() {
             ? `Estimasi belanja (${formatRupiah(estimasi)}) sudah melebihi budget (${formatRupiah(budget)}).`
             : `Estimasi belanja sudah mencapai ${(ratio * 100).toFixed(0)}% dari budget.`}
         </div>
+      )}
+
+      {belanja && (
+        <SaranRestock belanjaId={belanja.id} userId={userId!} items={items} onDone={refetch} />
       )}
 
       {items.length === 0 ? (
@@ -447,6 +462,82 @@ function BelanjaPage() {
   );
 }
 
+// Saran isi ulang: barang stok rendah yang belum ada di daftar belanja periode ini.
+function SaranRestock({
+  belanjaId,
+  userId,
+  items,
+  onDone,
+}: {
+  belanjaId: string;
+  userId: string;
+  items: BelanjaItemRow[];
+  onDone: () => void;
+}) {
+  const [adding, setAdding] = useState<string | null>(null);
+  const { data } = useQuery({
+    queryKey: ["stok-rendah", userId],
+    enabled: !!userId,
+    queryFn: () => getStokList(userId),
+  });
+
+  // Kunci barang yang sudah ada di daftar belanja (item_id atau nama bebas).
+  const adaKey = new Set(items.map((i) => itemKey(i.item_id, i.nama_snapshot, i.satuan)));
+  const saran = (data ?? []).filter((s) => stokRendah(s) && !adaKey.has(s.item_key));
+  if (saran.length === 0) return null;
+
+  const tambah = async (s: StokBarangRow) => {
+    setAdding(s.id);
+    try {
+      await tambahKeBelanja(userId, belanjaId, s, saranJumlah(s));
+      toast.success(`${s.nama} ditambahkan ke belanja.`);
+      onDone();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Gagal menambahkan.");
+    } finally {
+      setAdding(null);
+    }
+  };
+
+  return (
+    <div className="mb-4 overflow-hidden rounded-2xl border border-warning/40 bg-warning/5 shadow-sm">
+      <div className="flex items-center gap-2 border-b border-warning/30 bg-warning/10 px-4 py-2.5">
+        <Boxes className="h-4 w-4 shrink-0 text-warning" />
+        <span className="text-sm font-semibold">Saran isi ulang stok</span>
+        <span className="text-xs text-muted-foreground">({saran.length} barang menipis)</span>
+      </div>
+      <ul className="divide-y divide-warning/20">
+        {saran.map((s) => (
+          <li key={s.id} className="flex items-center gap-3 px-4 py-2.5">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">{s.nama}</p>
+              <p className="text-xs text-muted-foreground">
+                Sisa {Number(s.jumlah)} {s.satuan}
+                {s.jumlah_minimum != null && ` · min ${Number(s.jumlah_minimum)} ${s.satuan}`}
+              </p>
+            </div>
+            <span className="shrink-0 text-xs text-muted-foreground">
+              +{saranJumlah(s)} {s.satuan}
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => tambah(s)}
+              disabled={adding === s.id}
+            >
+              {adding === s.id ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function AddItemDialog({
   belanjaId,
   userId,
@@ -614,7 +705,12 @@ function AddItemDialog({
             </div>
             <div className="space-y-1.5">
               <Label>Satuan</Label>
-              <Input value={satuan} onChange={(e) => setSatuan(e.target.value)} />
+              <SatuanField
+                itemId={selectedItem?.id ?? null}
+                baseSatuan={selectedItem?.id ? selectedItem.satuan : null}
+                value={satuan}
+                onChange={setSatuan}
+              />
             </div>
           </div>
         </div>

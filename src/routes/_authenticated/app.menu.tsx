@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { usePeriode } from "@/lib/periode";
 import { useKeluarga } from "@/lib/useKeluarga";
 import { formatRupiah, namaBulan } from "@/lib/format";
 import { getKategoriPengeluaran } from "@/lib/pengeluaran";
+import { SatuanField } from "@/components/satuan-konversi";
 import {
   SLOTS,
   NAMA_HARI,
@@ -22,6 +23,7 @@ import {
   deleteKomponen,
   addRencana,
   deleteRencana,
+  setDimasak,
   generateDariMenu,
   type SlotMakan,
   type TipeKomponen,
@@ -71,6 +73,7 @@ import {
   Sparkles,
   X,
   Receipt,
+  CookingPot,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/menu")({
@@ -136,6 +139,7 @@ function MenuPage() {
 // ============ TAB RENCANA MINGGUAN ============
 function RencanaTab() {
   const { userId } = useAuth();
+  const queryClient = useQueryClient();
   const { bulan, tahun } = usePeriode();
   const [anchor, setAnchor] = useState<Date>(() => awalMinggu(new Date()));
   const [generating, setGenerating] = useState(false);
@@ -172,6 +176,20 @@ function RencanaTab() {
   const hapus = async (id: string) => {
     await deleteRencana(id);
     refetch();
+  };
+
+  const masak = async (r: (typeof rencana)[number]) => {
+    const jadi = !r.dimasak_at;
+    try {
+      await setDimasak(r.id, jadi);
+      queryClient.invalidateQueries({ queryKey: ["stok-list"] });
+      toast.success(
+        jadi ? "Ditandai dimasak — stok bahan dikurangi." : "Batal dimasak — stok dikembalikan.",
+      );
+      refetch();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Gagal memperbarui.");
+    }
   };
 
   const generate = async () => {
@@ -290,9 +308,11 @@ function RencanaTab() {
                         {list.map((r) => (
                           <li
                             key={r.id}
-                            className="flex items-center gap-1 rounded-lg bg-muted/50 px-2 py-1 text-xs"
+                            className={`flex items-center gap-1 rounded-lg px-2 py-1 text-xs ${r.dimasak_at ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/50"}`}
                           >
-                            <span className="min-w-0 flex-1 truncate">
+                            <span
+                              className={`min-w-0 flex-1 truncate ${r.dimasak_at ? "text-muted-foreground line-through" : ""}`}
+                            >
                               {menuNama.get(r.menu_id) ?? "Menu"}
                               {Number(r.porsi) !== 1 && (
                                 <span className="text-muted-foreground"> ×{r.porsi}</span>
@@ -301,6 +321,23 @@ function RencanaTab() {
                             {r.dibelanjakan_at && (
                               <ShoppingCart className="h-3 w-3 shrink-0 text-success" />
                             )}
+                            <button
+                              onClick={() => masak(r)}
+                              className={`shrink-0 rounded p-0.5 transition-colors ${
+                                r.dimasak_at
+                                  ? "bg-primary text-primary-foreground"
+                                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                              }`}
+                              aria-label={r.dimasak_at ? "Batal dimasak" : "Tandai dimasak"}
+                              aria-pressed={!!r.dimasak_at}
+                              title={
+                                r.dimasak_at
+                                  ? "Sudah dimasak (stok dikurangi) — klik untuk batal"
+                                  : "Tandai sudah dimasak"
+                              }
+                            >
+                              <CookingPot className="h-3 w-3" />
+                            </button>
                             <button
                               onClick={() => hapus(r.id)}
                               className="shrink-0 text-muted-foreground hover:text-destructive"
@@ -601,6 +638,9 @@ function AddKomponenDialog({ menuId, onAdded }: { menuId: string; onAdded: () =>
     queryFn: () => getKategoriPengeluaran(),
   });
 
+  // Satuan dasar item master terpilih (null = item bebas/manual).
+  const baseSatuan = (masterQ.data ?? []).find((m) => m.id === itemId)?.satuan_default ?? null;
+
   const reset = () => {
     setTipe("belanja");
     setNama("");
@@ -732,7 +772,12 @@ function AddKomponenDialog({ menuId, onAdded }: { menuId: string; onAdded: () =>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Satuan</Label>
-                  <Input value={satuan} onChange={(e) => setSatuan(e.target.value)} />
+                  <SatuanField
+                    itemId={itemId}
+                    baseSatuan={baseSatuan}
+                    value={satuan}
+                    onChange={setSatuan}
+                  />
                 </div>
               </div>
             </>

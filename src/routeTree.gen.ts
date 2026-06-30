@@ -20,6 +20,7 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAppStokRouteImport } from './routes/_authenticated/app.stok'
 import { Route as AuthenticatedAppSelesaiRouteImport } from './routes/_authenticated/app.selesai'
 import { Route as AuthenticatedAppScanStrukRouteImport } from './routes/_authenticated/app.scan-struk'
 import { Route as AuthenticatedAppProfilRouteImport } from './routes/_authenticated/app.profil'
@@ -31,8 +32,10 @@ import { Route as AuthenticatedAppGenerateRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAppFavoritRouteImport } from './routes/_authenticated/app.favorit'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppBudgetRouteImport } from './routes/_authenticated/app.budget'
+import { Route as AuthenticatedAppBelanjaTambahanRouteImport } from './routes/_authenticated/app.belanja-tambahan'
 import { Route as AuthenticatedAppBelanjaRouteImport } from './routes/_authenticated/app.belanja'
 import { Route as AuthenticatedAdminTokoRouteImport } from './routes/_authenticated/admin.toko'
+import { Route as AuthenticatedAdminProfilRouteImport } from './routes/_authenticated/admin.profil'
 import { Route as AuthenticatedAdminKategoriUserRouteImport } from './routes/_authenticated/admin.kategori-user'
 import { Route as AuthenticatedAdminKategoriPengeluaranRouteImport } from './routes/_authenticated/admin.kategori-pengeluaran'
 import { Route as AuthenticatedAdminKategoriBarangRouteImport } from './routes/_authenticated/admin.kategori-barang'
@@ -102,6 +105,11 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAppStokRoute = AuthenticatedAppStokRouteImport.update({
+  id: '/stok',
+  path: '/stok',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppSelesaiRoute = AuthenticatedAppSelesaiRouteImport.update({
   id: '/selesai',
   path: '/selesai',
@@ -163,6 +171,12 @@ const AuthenticatedAppBudgetRoute = AuthenticatedAppBudgetRouteImport.update({
   path: '/budget',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppBelanjaTambahanRoute =
+  AuthenticatedAppBelanjaTambahanRouteImport.update({
+    id: '/belanja-tambahan',
+    path: '/belanja-tambahan',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppBelanjaRoute = AuthenticatedAppBelanjaRouteImport.update({
   id: '/belanja',
   path: '/belanja',
@@ -173,6 +187,12 @@ const AuthenticatedAdminTokoRoute = AuthenticatedAdminTokoRouteImport.update({
   path: '/toko',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminProfilRoute =
+  AuthenticatedAdminProfilRouteImport.update({
+    id: '/profil',
+    path: '/profil',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminKategoriUserRoute =
   AuthenticatedAdminKategoriUserRouteImport.update({
     id: '/kategori-user',
@@ -266,8 +286,10 @@ export interface FileRoutesByFullPath {
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-pengeluaran': typeof AuthenticatedAdminKategoriPengeluaranRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/admin/profil': typeof AuthenticatedAdminProfilRoute
   '/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
+  '/app/belanja-tambahan': typeof AuthenticatedAppBelanjaTambahanRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/favorit': typeof AuthenticatedAppFavoritRoute
@@ -279,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/app/profil': typeof AuthenticatedAppProfilRoute
   '/app/scan-struk': typeof AuthenticatedAppScanStrukRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/app/stok': typeof AuthenticatedAppStokRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
@@ -302,8 +325,10 @@ export interface FileRoutesByTo {
   '/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/admin/kategori-pengeluaran': typeof AuthenticatedAdminKategoriPengeluaranRoute
   '/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/admin/profil': typeof AuthenticatedAdminProfilRoute
   '/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/app/belanja': typeof AuthenticatedAppBelanjaRoute
+  '/app/belanja-tambahan': typeof AuthenticatedAppBelanjaTambahanRoute
   '/app/budget': typeof AuthenticatedAppBudgetRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/favorit': typeof AuthenticatedAppFavoritRoute
@@ -315,6 +340,7 @@ export interface FileRoutesByTo {
   '/app/profil': typeof AuthenticatedAppProfilRoute
   '/app/scan-struk': typeof AuthenticatedAppScanStrukRoute
   '/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/app/stok': typeof AuthenticatedAppStokRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
@@ -342,8 +368,10 @@ export interface FileRoutesById {
   '/_authenticated/admin/kategori-barang': typeof AuthenticatedAdminKategoriBarangRoute
   '/_authenticated/admin/kategori-pengeluaran': typeof AuthenticatedAdminKategoriPengeluaranRoute
   '/_authenticated/admin/kategori-user': typeof AuthenticatedAdminKategoriUserRoute
+  '/_authenticated/admin/profil': typeof AuthenticatedAdminProfilRoute
   '/_authenticated/admin/toko': typeof AuthenticatedAdminTokoRoute
   '/_authenticated/app/belanja': typeof AuthenticatedAppBelanjaRoute
+  '/_authenticated/app/belanja-tambahan': typeof AuthenticatedAppBelanjaTambahanRoute
   '/_authenticated/app/budget': typeof AuthenticatedAppBudgetRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/app/favorit': typeof AuthenticatedAppFavoritRoute
@@ -355,6 +383,7 @@ export interface FileRoutesById {
   '/_authenticated/app/profil': typeof AuthenticatedAppProfilRoute
   '/_authenticated/app/scan-struk': typeof AuthenticatedAppScanStrukRoute
   '/_authenticated/app/selesai': typeof AuthenticatedAppSelesaiRoute
+  '/_authenticated/app/stok': typeof AuthenticatedAppStokRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/admin/users/$id': typeof AuthenticatedAdminUsersIdRoute
@@ -382,8 +411,10 @@ export interface FileRouteTypes {
     | '/admin/kategori-barang'
     | '/admin/kategori-pengeluaran'
     | '/admin/kategori-user'
+    | '/admin/profil'
     | '/admin/toko'
     | '/app/belanja'
+    | '/app/belanja-tambahan'
     | '/app/budget'
     | '/app/dashboard'
     | '/app/favorit'
@@ -395,6 +426,7 @@ export interface FileRouteTypes {
     | '/app/profil'
     | '/app/scan-struk'
     | '/app/selesai'
+    | '/app/stok'
     | '/admin/'
     | '/app/'
     | '/admin/users/$id'
@@ -418,8 +450,10 @@ export interface FileRouteTypes {
     | '/admin/kategori-barang'
     | '/admin/kategori-pengeluaran'
     | '/admin/kategori-user'
+    | '/admin/profil'
     | '/admin/toko'
     | '/app/belanja'
+    | '/app/belanja-tambahan'
     | '/app/budget'
     | '/app/dashboard'
     | '/app/favorit'
@@ -431,6 +465,7 @@ export interface FileRouteTypes {
     | '/app/profil'
     | '/app/scan-struk'
     | '/app/selesai'
+    | '/app/stok'
     | '/admin'
     | '/app'
     | '/admin/users/$id'
@@ -457,8 +492,10 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/kategori-barang'
     | '/_authenticated/admin/kategori-pengeluaran'
     | '/_authenticated/admin/kategori-user'
+    | '/_authenticated/admin/profil'
     | '/_authenticated/admin/toko'
     | '/_authenticated/app/belanja'
+    | '/_authenticated/app/belanja-tambahan'
     | '/_authenticated/app/budget'
     | '/_authenticated/app/dashboard'
     | '/_authenticated/app/favorit'
@@ -470,6 +507,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/profil'
     | '/_authenticated/app/scan-struk'
     | '/_authenticated/app/selesai'
+    | '/_authenticated/app/stok'
     | '/_authenticated/admin/'
     | '/_authenticated/app/'
     | '/_authenticated/admin/users/$id'
@@ -567,6 +605,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/app/stok': {
+      id: '/_authenticated/app/stok'
+      path: '/stok'
+      fullPath: '/app/stok'
+      preLoaderRoute: typeof AuthenticatedAppStokRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/selesai': {
       id: '/_authenticated/app/selesai'
       path: '/selesai'
@@ -644,6 +689,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBudgetRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/belanja-tambahan': {
+      id: '/_authenticated/app/belanja-tambahan'
+      path: '/belanja-tambahan'
+      fullPath: '/app/belanja-tambahan'
+      preLoaderRoute: typeof AuthenticatedAppBelanjaTambahanRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/belanja': {
       id: '/_authenticated/app/belanja'
       path: '/belanja'
@@ -656,6 +708,13 @@ declare module '@tanstack/react-router' {
       path: '/toko'
       fullPath: '/admin/toko'
       preLoaderRoute: typeof AuthenticatedAdminTokoRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/profil': {
+      id: '/_authenticated/admin/profil'
+      path: '/profil'
+      fullPath: '/admin/profil'
+      preLoaderRoute: typeof AuthenticatedAdminProfilRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/kategori-user': {
@@ -759,6 +818,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminKategoriBarangRoute: typeof AuthenticatedAdminKategoriBarangRoute
   AuthenticatedAdminKategoriPengeluaranRoute: typeof AuthenticatedAdminKategoriPengeluaranRoute
   AuthenticatedAdminKategoriUserRoute: typeof AuthenticatedAdminKategoriUserRoute
+  AuthenticatedAdminProfilRoute: typeof AuthenticatedAdminProfilRoute
   AuthenticatedAdminTokoRoute: typeof AuthenticatedAdminTokoRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminUsersIdRoute: typeof AuthenticatedAdminUsersIdRoute
@@ -773,6 +833,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminKategoriPengeluaranRoute:
     AuthenticatedAdminKategoriPengeluaranRoute,
   AuthenticatedAdminKategoriUserRoute: AuthenticatedAdminKategoriUserRoute,
+  AuthenticatedAdminProfilRoute: AuthenticatedAdminProfilRoute,
   AuthenticatedAdminTokoRoute: AuthenticatedAdminTokoRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminUsersIdRoute: AuthenticatedAdminUsersIdRoute,
@@ -784,6 +845,7 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBelanjaRoute: typeof AuthenticatedAppBelanjaRoute
+  AuthenticatedAppBelanjaTambahanRoute: typeof AuthenticatedAppBelanjaTambahanRoute
   AuthenticatedAppBudgetRoute: typeof AuthenticatedAppBudgetRoute
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
   AuthenticatedAppFavoritRoute: typeof AuthenticatedAppFavoritRoute
@@ -795,6 +857,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppProfilRoute: typeof AuthenticatedAppProfilRoute
   AuthenticatedAppScanStrukRoute: typeof AuthenticatedAppScanStrukRoute
   AuthenticatedAppSelesaiRoute: typeof AuthenticatedAppSelesaiRoute
+  AuthenticatedAppStokRoute: typeof AuthenticatedAppStokRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppHistoryIdRoute: typeof AuthenticatedAppHistoryIdRoute
   AuthenticatedAppLanggananCheckoutRoute: typeof AuthenticatedAppLanggananCheckoutRoute
@@ -805,6 +868,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBelanjaRoute: AuthenticatedAppBelanjaRoute,
+  AuthenticatedAppBelanjaTambahanRoute: AuthenticatedAppBelanjaTambahanRoute,
   AuthenticatedAppBudgetRoute: AuthenticatedAppBudgetRoute,
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
   AuthenticatedAppFavoritRoute: AuthenticatedAppFavoritRoute,
@@ -816,6 +880,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppProfilRoute: AuthenticatedAppProfilRoute,
   AuthenticatedAppScanStrukRoute: AuthenticatedAppScanStrukRoute,
   AuthenticatedAppSelesaiRoute: AuthenticatedAppSelesaiRoute,
+  AuthenticatedAppStokRoute: AuthenticatedAppStokRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppHistoryIdRoute: AuthenticatedAppHistoryIdRoute,
   AuthenticatedAppLanggananCheckoutRoute:

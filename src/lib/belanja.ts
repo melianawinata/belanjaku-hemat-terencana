@@ -18,6 +18,7 @@ export interface BelanjaItemRow {
   toko_id: string | null;
   sudah_dibeli: boolean;
   dibeli_at: string | null;
+  tambahan: boolean;
 }
 
 export interface BelanjaBulananRow {
@@ -84,6 +85,105 @@ export async function getOrCreateBelanja(
     .single();
   if (error) throw error;
   return created as BelanjaBulananRow;
+}
+
+// ---- Belanja Tambahan (pembelian susulan, langsung dibeli & masuk stok) ----
+export interface BelanjaTambahanInput {
+  item_id: string | null;
+  nama: string;
+  kategori_barang_id?: string | null;
+  jumlah: number;
+  satuan: string;
+  harga: number; // total yang dibayar untuk pembelian ini
+  tanggal: string; // ISO (YYYY-MM-DD)
+}
+
+/** Daftar pembelian tambahan untuk periode (terbaru dulu). */
+export async function getBelanjaTambahan(
+  userId: string,
+  bulan: number,
+  tahun: number,
+): Promise<BelanjaItemRow[]> {
+  const belanja = await getOrCreateBelanja(userId, bulan, tahun);
+  const { data, error } = await supabase
+    .from("belanja_item")
+    .select("*")
+    .eq("belanja_id", belanja.id)
+    .eq("tambahan", true)
+    .order("dibeli_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as BelanjaItemRow[];
+}
+
+/**
+ * Catat satu pembelian tambahan: ditandai `tambahan` + `sudah_dibeli` sehingga
+ * masuk stok (trigger) dan terhitung realisasi/budget bulan ini. Bila item
+ * master & ada harga, simpan juga histori_harga (per-satuan) untuk estimasi.
+ */
+export async function addBelanjaTambahan(
+  userId: string,
+  bulan: number,
+  tahun: number,
+  input: BelanjaTambahanInput,
+): Promise<void> {
+  const belanja = await getOrCreateBelanja(userId, bulan, tahun);
+  const dibeliAt = new Date(input.tanggal + "T00:00:00").toISOString();
+  const { error } = await supabase.from("belanja_item").insert({
+    belanja_id: belanja.id,
+    user_id: userId,
+    item_id: input.item_id,
+    nama_snapshot: input.nama.trim(),
+    kategori_barang_id: input.kategori_barang_id ?? null,
+    jumlah: input.jumlah,
+    satuan: input.satuan,
+    estimasi_harga: 0,
+    harga_aktual: input.harga,
+    harga_sumber: "manual",
+    sudah_dibeli: true,
+    dibeli_at: dibeliAt,
+    tambahan: true,
+  });
+  if (error) throw error;
+  // Histori harga per-satuan (selaras app.selesai) agar estimasi ke depan akurat.
+  if (input.item_id && input.harga > 0) {
+    await supabase.from("histori_harga").insert({
+      item_id: input.item_id,
+      user_id: userId,
+      harga: Math.round(input.harga / (input.jumlah || 1)),
+      tanggal: dibeliAt,
+    });
+  }
+}
+
+export interface BelanjaTambahanPatch {
+  jumlah?: number;
+  satuan?: string;
+  harga?: number;
+  tanggal?: string; // ISO (YYYY-MM-DD)
+}
+
+/**
+ * Ubah pembelian tambahan. Perubahan jumlah/satuan ikut menyesuaikan stok
+ * (trigger belanja_item_ke_stok pada UPDATE saat tetap sudah_dibeli); harga
+ * memperbarui realisasi/budget.
+ */
+export async function updateBelanjaTambahan(
+  id: string,
+  patch: BelanjaTambahanPatch,
+): Promise<void> {
+  const upd: { jumlah?: number; satuan?: string; harga_aktual?: number; dibeli_at?: string } = {};
+  if (patch.jumlah != null) upd.jumlah = patch.jumlah;
+  if (patch.satuan != null) upd.satuan = patch.satuan;
+  if (patch.harga != null) upd.harga_aktual = patch.harga;
+  if (patch.tanggal) upd.dibeli_at = new Date(patch.tanggal + "T00:00:00").toISOString();
+  if (Object.keys(upd).length === 0) return;
+  const { error } = await supabase.from("belanja_item").update(upd).eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteBelanjaTambahan(id: string): Promise<void> {
+  const { error } = await supabase.from("belanja_item").delete().eq("id", id);
+  if (error) throw error;
 }
 
 export function totalEstimasi(items: BelanjaItemRow[]): number {

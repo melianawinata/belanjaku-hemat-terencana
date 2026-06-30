@@ -121,6 +121,7 @@ export type Database = {
           nama_snapshot: string;
           satuan: string;
           sudah_dibeli: boolean;
+          tambahan: boolean;
           toko_id: string | null;
           user_id: string;
         };
@@ -140,6 +141,7 @@ export type Database = {
           nama_snapshot: string;
           satuan?: string;
           sudah_dibeli?: boolean;
+          tambahan?: boolean;
           toko_id?: string | null;
           user_id: string;
         };
@@ -159,6 +161,7 @@ export type Database = {
           nama_snapshot?: string;
           satuan?: string;
           sudah_dibeli?: boolean;
+          tambahan?: boolean;
           toko_id?: string | null;
           user_id?: string;
         };
@@ -337,6 +340,54 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "item_favorit_item_id_fkey";
+            columns: ["item_id"];
+            isOneToOne: false;
+            referencedRelation: "item";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      item_konversi: {
+        Row: {
+          created_at: string;
+          faktor: number;
+          id: string;
+          item_id: string;
+          keluarga_id: string;
+          satuan: string;
+          tampilan: boolean;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          faktor: number;
+          id?: string;
+          item_id: string;
+          keluarga_id: string;
+          satuan: string;
+          tampilan?: boolean;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          faktor?: number;
+          id?: string;
+          item_id?: string;
+          keluarga_id?: string;
+          satuan?: string;
+          tampilan?: boolean;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "item_konversi_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "item_konversi_item_id_fkey";
             columns: ["item_id"];
             isOneToOne: false;
             referencedRelation: "item";
@@ -782,6 +833,7 @@ export type Database = {
         Row: {
           created_at: string;
           dibelanjakan_at: string | null;
+          dimasak_at: string | null;
           id: string;
           keluarga_id: string;
           menu_id: string;
@@ -793,6 +845,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           dibelanjakan_at?: string | null;
+          dimasak_at?: string | null;
           id?: string;
           keluarga_id: string;
           menu_id: string;
@@ -804,6 +857,7 @@ export type Database = {
         Update: {
           created_at?: string;
           dibelanjakan_at?: string | null;
+          dimasak_at?: string | null;
           id?: string;
           keluarga_id?: string;
           menu_id?: string;
@@ -876,6 +930,158 @@ export type Database = {
           urutan?: number;
         };
         Relationships: [];
+      };
+      stok_barang: {
+        Row: {
+          catatan: string | null;
+          created_at: string;
+          id: string;
+          item_id: string | null;
+          item_key: string;
+          jumlah: number;
+          jumlah_minimum: number | null;
+          kategori_barang_id: string | null;
+          keluarga_id: string;
+          lokasi: string | null;
+          nama: string;
+          satuan: string;
+          tanggal_expired: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          catatan?: string | null;
+          created_at?: string;
+          id?: string;
+          item_id?: string | null;
+          jumlah?: number;
+          jumlah_minimum?: number | null;
+          kategori_barang_id?: string | null;
+          keluarga_id: string;
+          lokasi?: string | null;
+          nama: string;
+          satuan?: string;
+          tanggal_expired?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          catatan?: string | null;
+          created_at?: string;
+          id?: string;
+          item_id?: string | null;
+          jumlah?: number;
+          jumlah_minimum?: number | null;
+          kategori_barang_id?: string | null;
+          keluarga_id?: string;
+          lokasi?: string | null;
+          nama?: string;
+          satuan?: string;
+          tanggal_expired?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stok_barang_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stok_barang_item_id_fkey";
+            columns: ["item_id"];
+            isOneToOne: false;
+            referencedRelation: "item";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stok_barang_kategori_barang_id_fkey";
+            columns: ["kategori_barang_id"];
+            isOneToOne: false;
+            referencedRelation: "kategori_barang";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      stok_mutasi: {
+        Row: {
+          catatan: string | null;
+          created_at: string;
+          faktor: number;
+          id: string;
+          item_id: string | null;
+          item_key: string;
+          jumlah: number;
+          jumlah_dasar: number;
+          kategori_barang_id: string | null;
+          keluarga_id: string;
+          nama: string;
+          ref_id: string | null;
+          satuan: string;
+          satuan_dasar: string | null;
+          sumber: string;
+          tipe: string;
+          user_id: string;
+        };
+        Insert: {
+          catatan?: string | null;
+          created_at?: string;
+          faktor?: number;
+          id?: string;
+          item_id?: string | null;
+          jumlah: number;
+          kategori_barang_id?: string | null;
+          keluarga_id: string;
+          nama: string;
+          ref_id?: string | null;
+          satuan?: string;
+          satuan_dasar?: string | null;
+          sumber?: string;
+          tipe: string;
+          user_id: string;
+        };
+        Update: {
+          catatan?: string | null;
+          created_at?: string;
+          faktor?: number;
+          id?: string;
+          item_id?: string | null;
+          jumlah?: number;
+          kategori_barang_id?: string | null;
+          keluarga_id?: string;
+          nama?: string;
+          ref_id?: string | null;
+          satuan?: string;
+          satuan_dasar?: string | null;
+          sumber?: string;
+          tipe?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stok_mutasi_keluarga_id_fkey";
+            columns: ["keluarga_id"];
+            isOneToOne: false;
+            referencedRelation: "keluarga";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stok_mutasi_item_id_fkey";
+            columns: ["item_id"];
+            isOneToOne: false;
+            referencedRelation: "item";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stok_mutasi_kategori_barang_id_fkey";
+            columns: ["kategori_barang_id"];
+            isOneToOne: false;
+            referencedRelation: "kategori_barang";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       toko: {
         Row: {

@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, LogOut, Crown } from "lucide-react";
+import { Loader2, LogOut, Crown, Eye, EyeOff } from "lucide-react";
 
 const PLAN_LABEL: Record<string, string> = { plus: "Plus", keluarga: "Keluarga" };
 
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_authenticated/app/profil")({
   component: ProfilPage,
 });
 
-function ProfilPage() {
+export function ProfilPage() {
   const { userId, profile, loading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -52,6 +52,7 @@ function ProfilPage() {
   const [saving, setSaving] = useState(false);
   const [pw, setPw] = useState("");
   const [pwSaving, setPwSaving] = useState(false);
+  const [pwTampil, setPwTampil] = useState(false);
 
   const { data: kategoriList } = useQuery({
     queryKey: ["kategori_user_public"],
@@ -240,13 +241,24 @@ function ProfilPage() {
         <div className="rounded-2xl border bg-card p-5 shadow-sm">
           <p className="mb-3 font-semibold">Ganti Password</p>
           <div className="flex flex-wrap gap-2">
-            <Input
-              type="password"
-              value={pw}
-              onChange={(e) => setPw(e.target.value)}
-              placeholder="Password baru (min. 6)"
-              className="max-w-xs"
-            />
+            <div className="relative max-w-xs flex-1">
+              <Input
+                type={pwTampil ? "text" : "password"}
+                value={pw}
+                onChange={(e) => setPw(e.target.value)}
+                placeholder="Password baru (min. 6)"
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setPwTampil((v) => !v)}
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                aria-label={pwTampil ? "Sembunyikan password" : "Lihat password"}
+                title={pwTampil ? "Sembunyikan password" : "Lihat password"}
+              >
+                {pwTampil ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
             <Button variant="outline" onClick={gantiPw} disabled={pwSaving}>
               {pwSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Ubah Password
             </Button>
